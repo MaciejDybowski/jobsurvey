@@ -1,0 +1,12 @@
+@import "colors";
+@import "fonts";
+@import "mixins";
+@import "breakpoints";
+
+*{
+    margin:0px 0px;
+    padding: 0px 0px;
+    box-sizing: border-box;
+    font-family: $main-font;
+}
+
