@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
+import Test from '../views/Test.vue'
 
 Vue.use(VueRouter)
 
@@ -17,6 +18,11 @@ const routes = [
     component: Login
   },
   {
+    path: '/test',
+    name: 'Test',
+    component: Test,
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting
@@ -27,7 +33,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-mode:"history",
+  mode: "history",
   routes
 })
 
