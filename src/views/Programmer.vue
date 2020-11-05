@@ -51,6 +51,12 @@
           <v-col>
             <v-sheet min-height="70vh" rounded="lg">
               <!--  -->
+              <div class="wrapper">
+                <DoughnutBox />
+                <BarBox />
+                <MultiBarBox />
+                <HorizontalBatBox />
+              </div>
             </v-sheet>
           </v-col>
         </v-row>
@@ -60,7 +66,19 @@
 </template>
 
 <script>
+import DoughnutBox from "../components/ChartBox/DoughnutBox.vue";
+import BarBox from "../components/ChartBox/BarBox.vue";
+import MultiBarBox from "../components/ChartBox/MultiBarBox";
+import HorizontalBatBox from "../components/ChartBox/HorizontalBarBox";
+
 export default {
+  name: "Programmer",
+  components: {
+    DoughnutBox,
+    BarBox,
+    MultiBarBox,
+    HorizontalBatBox,
+  },
   data: () => ({
     links: ["Badanie IT", "Strona bulldoga"],
   }),
@@ -101,5 +119,9 @@ export default {
     }
     border: 2px solid purple !important;
   }
+}
+
+.wrapper {
+  padding: 20px 0px;
 }
 </style>
