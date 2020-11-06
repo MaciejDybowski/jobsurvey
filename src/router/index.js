@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Test from '../views/Test.vue'
 import Programmer from '../views/Programmer.vue'
+import SingleSurvey from '../views/SingleSurvey.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,12 @@ const routes = [
     path: '/test',
     name: 'Test',
     component: Test,
+  },
+  {
+    path: '/singlesurvey/:hash',
+    name: 'SingleSurvey',
+    component: SingleSurvey,
+    props: true,
   },
   {
     path: '/about',
