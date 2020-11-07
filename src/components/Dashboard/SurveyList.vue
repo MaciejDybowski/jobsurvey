@@ -5,6 +5,7 @@
             <v-toolbar-title>Surveys</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
+
             <template>
                 <v-btn color="primary" dark class="mb-5" @click="newSurvey">
                     New Survey
@@ -32,9 +33,10 @@
         <v-icon small class="mr-2" @click="deleteItem(item)">
             mdi-delete
         </v-icon>
-        <v-icon small @click="generatePdf(item)">
+        <v-icon small class="mr-2" @click="generatePdf(item)">
             mdi-file-pdf
         </v-icon>
+        <v-icon small @click="generatePdf(item)">mdi-attachment</v-icon>
     </template>
     <template v-slot:no-data>
         No data
@@ -45,26 +47,28 @@
 <script>
 export default {
     name: 'SurveyList',
-    data: () => ({
-        dialogDelete: false,
-        headers: [{
-                text: 'Survey name',
-                align: 'start',
-                sortable: false,
-                value: 'surveyName',
-            },
-            {
-                text: 'Data Created',
-                value: 'dataCreated'
-            },
-            {
-                text: 'Actions',
-                value: 'actions',
-                sortable: false
-            },
-        ],
-        surveys: [],
-    }),
+    data() {
+        return {
+            dialogDelete: false,
+            headers: [{
+                    text: 'Survey name',
+                    align: 'start',
+                    sortable: false,
+                    value: 'surveyName',
+                },
+                {
+                    text: 'Data Created',
+                    value: 'dataCreated'
+                },
+                {
+                    text: 'Actions',
+                    value: 'actions',
+                    sortable: false
+                },
+            ],
+            surveys: [],
+        }
+    },
     watch: {
         dialogDelete(val) {
             val || this.closeDelete()
@@ -76,21 +80,24 @@ export default {
     methods: {
         initialize() {
             this.surveys = [{
+                    id: 1,
                     surveyName: 'Survey for DevOps',
                     dataCreated: "3.11.2020",
                 },
                 {
+                    id: 2,
                     surveyName: 'Survey for Vue Programmers',
                     dataCreated: "2.11.2020",
                 },
                 {
+                    id: 3,
                     surveyName: 'Survey for UX Designer',
                     dataCreated: "4.11.2020",
                 }
             ]
         },
         editItem(item) {
-            this.$router.push("/dashboard/survey/editSurvey")
+            this.$router.push("/dashboard/survey/editSurvey/" + item.id)
             console.log(item)
         },
         deleteItem(item) {

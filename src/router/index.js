@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-import Test from '../views/Test.vue'
 import Programmer from '../views/Programmer.vue'
 
 Vue.use(VueRouter)
@@ -24,17 +23,9 @@ const routes = [
     component: Programmer
   },
   {
-    path: '/test',
-    name: 'Test',
-    component: Test,
-  },
-  {
     path: '/about',
     name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import('../views/About.vue')
   },
   {
     path: '/dashboard',
@@ -44,7 +35,7 @@ const routes = [
   {
     path: '/dashboard/survey',
     name: 'Survey',
-    component: () => import('../views/Dashboard/Survey/Survey.vue'),
+    component: () => import('../views/Dashboard/Survey.vue'),
     children: [
       {
         path: '/dashboard/survey/addSurvey',
@@ -52,7 +43,7 @@ const routes = [
         component: () => import('../components/Dashboard/Survey/AddSurvey.vue')
       },
       {
-        path: '/dashboard/survey/editSurvey',
+        path: '/dashboard/survey/editSurvey/:id',
         name: 'Edit Survey',
         component: () => import('../components/Dashboard/Survey/EditSurvey.vue')
       }

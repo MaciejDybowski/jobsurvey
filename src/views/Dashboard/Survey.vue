@@ -1,9 +1,11 @@
 <template>
-<v-app id="inspire">
-    <top-nav :title="topBarTitle" :survey="false"></top-nav>
+<v-app>
+    <TopNav :title="topBarTitle" :survey="true" />
     <v-main>
-        <div class="d-flex justify-center mb-6 padding">
-            <SurveyList />
+        <div class="d-flex flex-row mb-12">
+            <v-col>
+                <router-view></router-view>
+            </v-col>
         </div>
     </v-main>
 </v-app>
@@ -11,16 +13,13 @@
 
 <script>
 import TopNav from '../../components/Dashboard/TopNav.vue'
-import SurveyList from '../../components/Dashboard/SurveyList.vue'
 export default {
-    name: "Dashboard",
+    name: "AddSurvey",
     components: {
         TopNav,
-        SurveyList
     },
     data: () => ({
-        topBarTitle: "Dashboard",
-        survey: false
+        topBarTitle: "New Survey"
     }),
     beforeCreate: function () {
         if (this.$cookie.get("token") === null) {
@@ -35,8 +34,5 @@ export default {
 }
 </script>
 
-<style scoped>
-.padding {
-    padding-top: 100px;
-}
+<style>
 </style>

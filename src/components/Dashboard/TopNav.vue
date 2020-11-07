@@ -1,6 +1,9 @@
 <template>
 <div>
     <v-toolbar>
+        <v-btn v-if="survey" icon @click="returnDashboard">
+            <v-icon>mdi-keyboard-return</v-icon>
+        </v-btn>
         <v-toolbar-title>{{title}}</v-toolbar-title>
         <v-spacer></v-spacer>
 
@@ -23,7 +26,7 @@
                             {{ user.email }}
                         </p>
                         <v-divider class="my-3"></v-divider>
-                        <v-btn depressed rounded text>
+                        <v-btn depressed rounded text @click="logout">
                             Log out
                         </v-btn>
                     </div>
@@ -38,7 +41,7 @@
 <script>
 export default {
     name: "DashboardNav",
-    props: ['title'],
+    props: ['title', 'survey'],
     data: () => ({
         user: {
             initials: 'PW',
@@ -46,6 +49,16 @@ export default {
             email: 'patrykwich@gmail.com',
         },
     }),
+    methods: {
+        logout: function () {
+            this.$cookie.delete("token");
+            this.$session.destroy();
+            this.$router.push("/");
+        },
+        returnDashboard() {
+            this.$router.push('/dashboard')
+        },
+    },
 }
 </script>
 

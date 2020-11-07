@@ -43,13 +43,13 @@ export default new Vuex.Store({
           const userData = {
             name: res.name,
             token: JSON.stringify(res.id),
-            expireTime: '30s',
+            expireTime: '3600s',
           }
           commit('authUser', userData);
           this._vm.$session.start()
           this._vm.$session.set('user', userData)
           this._vm.$cookie.set('token', userData.token, { expires: userData.expireTime })
-          router.push('/test')
+          router.push('/dashboard')
         }, () => {
           console.log('mamy error')
           commit('handleErr')
