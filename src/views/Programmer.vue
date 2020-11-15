@@ -28,31 +28,15 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="2">
-            <v-sheet rounded="lg">
-              <v-list color="transparent">
-                <v-list-item v-for="n in 5" :key="n" link>
-                  <v-list-item-content>
-                    <v-list-item-title> List Item {{ n }} </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-
-                <v-divider class="my-2"></v-divider>
-
-                <v-list-item link color="grey lighten-4">
-                  <v-list-item-content>
-                    <v-list-item-title> Refresh </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-sheet>
-          </v-col>
-
           <v-col>
             <v-sheet min-height="70vh" rounded="lg">
               <!--  -->
               <div class="wrapper">
-                <DoughnutBox />
+                <DoughnutBox
+                  :chartDataAnswers="questions[1].answers"
+                  :chartResultData="questions[1].results"
+                  :questionDescription="questions[1].question"
+                />
                 <BarBox />
                 <MultiBarBox />
                 <HorizontalBatBox />
@@ -70,6 +54,7 @@ import DoughnutBox from "../components/ChartBox/DoughnutBox.vue";
 import BarBox from "../components/ChartBox/BarBox.vue";
 import MultiBarBox from "../components/ChartBox/MultiBarBox";
 import HorizontalBatBox from "../components/ChartBox/HorizontalBarBox";
+import axios from "axios";
 
 export default {
   name: "Programmer",
@@ -79,9 +64,28 @@ export default {
     MultiBarBox,
     HorizontalBatBox,
   },
-  data: () => ({
-    links: ["Badanie IT", "Strona bulldoga"],
-  }),
+  data() {
+    return {
+      links: ["Badanie IT", "Strona bulldoga"],
+      questions: null,
+    };
+  },
+  mounted() {
+    axios
+      .get(`http://192.168.4.6:8080/surveys/12334325/charts`, {
+        crossDomain: true,
+      })
+
+      .then((res) => {
+        this.questions = res.data;
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    this.flag = true;
+  },
 };
 </script>
 
@@ -117,6 +121,7 @@ export default {
     a {
       color: purple !important;
     }
+
     border: 2px solid purple !important;
   }
 }

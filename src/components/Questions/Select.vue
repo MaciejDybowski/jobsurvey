@@ -1,6 +1,6 @@
 <template>
-  <div class="question">
-    <div class="text">{{ questionText }}</div>
+  <div class="questionbox">
+    <div class="text">{{ questionNumber + 1 }}. {{ questionText }}</div>
     <div class="answer">
       <v-select
         :items="items"
@@ -13,50 +13,72 @@
 
 <script>
 export default {
+  // nazwa komponentu
   name: "Select",
   props: {
-    questionId: Number,
-    questionName: String,
-    questionAnswers: Array,
+    questionNumber: Number, // Numer pytania -> otrzymuje z pętli pytan z rodzica
+
+    questionId: Number, // Id pytania z bazy danych
+    questionName: String, // Nazwa pytania z bazy danych
+    questionAnswers: Array, // tablica dostepnych odpowiedzi z bazy
   },
   data() {
+    // tablica potrzebna do obrobienia talibcy propsow bo tam dostaje talibce obiektow a ja potrzebuje tablice stringow
     let answers = [];
+    // petla po tablicy obiektow z propsow
     this.questionAnswers.forEach((e) => {
       answers.push(e.answerName);
     });
 
     return {
-      questionText: this.questionName,
-      items: answers,
-      defaultSelected: "Wybierz odpowiedź...",
+      questionText: this.questionName, // opis pytania
+      items: answers, // tablica tekstowa z dostepnymi odpowiedziami
+      defaultSelected: "Wybierz odpowiedź...", // model dla select inputa
     };
   },
   watch: {
+    // ustawienie watchera na model inputa typu select, przyjmuje dwie wartosci stara i nowa
     defaultSelected(newValue, oldValue) {
+      // porowannie wartosci zmiennej ktorej dotyczy newValue i oldValue
       if (oldValue !== newValue) {
-        console.log(`Pytanie ID ${this.questionId} odp: ${newValue}`);
-        this.sendAnswer(this.questionId, newValue);
+        // jezeli sie cos zmieni to wywolujemy funkcje ktora emituje nam odpowiedz do rodzica
+        this.sendAnswer();
       }
     },
   },
   methods: {
-    sendAnswer(id, answer) {
-      this.$emit("save", id, answer);
+    // metoda wysylajaca odpowiedz do rodzica, przyjmuje id pytania (z bazy) i odpowiedz udzieloną przez uzytkownika
+    sendAnswer() {
+      // emitujemy do rodzica z payloadem
+      this.$emit("save", this.questionId, this.defaultSelected);
     },
   },
 };
 </script>
 
-<style lang='scss'>
-.questionc {
-  width: 90%;
+<style lang="scss">
+// style globalne dla 3 komponeotw formularzowych
+.questionbox {
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 15px 0px;
+  color: black !important;
 
-  padding: 10px 10px;
-  background-color: #f0f7f4;
-  border-radius: 10px;
-  .text {
-    margin-top: 20px;
-    margin-bottom: 20px;
+  input[type="number"] {
+    width: 50%;
+    padding: 10px 0px;
+    -moz-appearance: textfield;
+
+    &:focus {
+      outline: none;
+    }
   }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 </style>

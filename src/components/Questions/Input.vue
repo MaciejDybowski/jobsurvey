@@ -1,51 +1,51 @@
 <template>
-  <div class="question">
-    <div class="text">{{ questionText }}</div>
+  <div class="questionbox">
+    <div class="text">{{ questionNumber + 1 }}. {{ questionText }}</div>
     <div class="answer">
-      <input v-model="text" type="number" placeholder="wpisz swoją odpowiedź" />
+      <input
+        v-model="text"
+        type="number"
+        placeholder="Wpisz swoją odpowiedź..."
+      />
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  // nazwa komponentu
   name: "Input",
   props: {
-    questionId: Number,
-    questionName: String,
+    questionNumber: Number, // Numer pytania -> otrzymuje z pętli pytan z rodzica
+    questionId: Number, // Id pytania z bazy danych
+    questionName: String, // Nazwa pytania z bazy danych
   },
   data() {
     return {
-      questionText: this.questionName,
-      text: "",
+      questionText: this.questionName, // przypisanie z propsow na date
+      text: "", // model dla inputa (stan wew. komponentu)
     };
   },
   watch: {
+    // ustawienie watchera na model inputa o nazwie text, przyjmuje dwie wartosci stara i nowa
     text(newValue, oldValue) {
+      // porowannie wartosci zmiennej ktorej dotyczy newValue i oldValue
       if (oldValue !== newValue) {
-        console.log(`Pytanie ID ${this.questionId} odp: ${newValue}`);
-        //this.sendAnswer(this.questionId, newValue);
+        // jezeli sie cos zmieni to wywolujemy funkcje ktora emituje nam odpowiedz do rodzica
+        this.sendAnswer();
       }
     },
   },
   methods: {
-    sendAnswer(id, answer) {
-      this.$emit("save", id, answer);
+    // metoda wysylajaca odpowiedz do rodzica, przyjmuje id pytania (z bazy) i odpowiedz udzieloną przez uzytkownika
+    sendAnswer() {
+      // emitujemy do rodzica z payloadem
+      this.$emit("save", this.questionId, this.text);
     },
   },
 };
 </script>
 
-<style>
-.question {
-  width: 90%;
-  margin: 20px 20px;
-  padding: 10px 10px;
-  background-color: #f0f7f4;
-  border-radius: 10px;
-  .text {
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-}
+<style lang="scss">
+// style globalne dla 3 komponeotw formularzowych są w komponencie Select
 </style>
