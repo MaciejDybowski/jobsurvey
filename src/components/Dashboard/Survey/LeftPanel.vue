@@ -1,13 +1,14 @@
 <template>
-<div>
+<div class="fixed">
     <v-card>
         <v-card-title>
-            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search question" single-line hide-details></v-text-field>
+            <v-text-field v-model="search" :loading="dataLoading" append-icon="mdi-magnify" label="Search question" single-line hide-details></v-text-field>
         </v-card-title>
-        <v-data-table hide-default-header hide-default-footer :headers="headers" :items="questions" :search="search">
+        <v-data-table hide-default-header hide-default-footer :headers="headers" :items="questionsList" :items-per-page="5" :search="search">
             <template v-slot:item="row">
                 <tr @click="addQuestion(row.item)">
-                    <td>{{row.item.name}}</td>
+                    <td>{{row.item.questionName}}</td>
+
                 </tr>
             </template>
         </v-data-table>
@@ -18,21 +19,22 @@
         <v-card-title>
             Add New Question
         </v-card-title>
-        <v-data-table hide-default-header hide-default-footer :headers="headers" :items="newQuestions">
+        <v-data-table hide-default-header hide-default-footer :headers="headers" :items="questionTypeList">
             <template v-slot:item="row">
-                <tr @click="addQuestion(row.item)">
+                <tr @click="addNewQuestion(row.item)">
                     <td>
-                        <v-icon> {{row.item.questionType.icon}} </v-icon> {{row.item.questionType.typeName}}
+                        <v-icon> {{row.item.icon}} </v-icon> {{row.item.typeName}}
                     </td>
                 </tr>
             </template>
         </v-data-table>
-
     </v-card>
 </div>
 </template>
 
 <script>
+import questionsType from '../../../assets/questionsType.js';
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -42,79 +44,57 @@ export default {
                 text: 'Question',
                 align: 'start',
                 filterable: true,
-                value: 'name',
+                value: 'questionName',
             }],
-            questions: [{
-                id: 560,
-                name: 'Twoje stanowisko to:',
-                questionType: {
-                    typeName: 'Jednokrotny wybór',
-                    type: 'radio',
-                    icon: "mdi-checkbox-marked-circle",
-                },
-                answers: [{
-                        id: 1,
-                        name: 'Junior'
-                    },
-                    {
-                        id: 2,
-                        name: 'Senior Developer'
-                    }
-                ]
-            }],
-            newQuestions: [{
-                    id: null,
-                    name: null,
-                    questionType: {
-                        typeName: "Długi opis",
-                        type: 'textarea',
-                        icon: "mdi-text-subject",
-                    },
-                    answers: []
-                },
-                {
-                    id: null,
-                    name: "",
-                    questionType: {
-                        typeName: "Krótka odpowiedz",
-                        type: 'input',
-                        icon: "mdi-text-short",
-                    },
-                    answers: []
-                },
-                {
-                    id: null,
-                    name: null,
-                    questionType: {
-                        typeName: "Jednokrotny wybór",
-                        type: 'radio',
-                        icon: "mdi-checkbox-marked-circle",
-                    },
-                    answers: []
-                },
-                {
-                    id: null,
-                    name: null,
-                    questionType: {
-                        typeName: "Wielokrotny wybór",
-                        type: "checkbox",
-                        icon: "mdi-checkbox-marked",
-                    },
-                    answers: []
-                }
-            ],
+            questionsList: [],
+            questionTypeList: [],
+            dataLoading: false,
+            snackBar: this.$store.getters.snackBar,
         }
     },
+    created() {
+        this.questionTypeList = questionsType;
+        this.fetchQuestion();
+    },
     methods: {
+        async fetchQuestion() {
+            this.dataLoading = true;
+            await axios
+                .get(`${this.$store.state.serverUrl}/questions`, {
+                    crossDomain: true,
+                })
+                .then((res) => {
+                    this.questionsList = res.data;
+                    this.questionsList.splice(0, 4);
+                    this.dataLoading = false;
+                })
+                .catch(() => {
+                    this.dataLoading = false;
+                    this.snackBar.show = true;
+                    this.snackBar.infoText = "Error server";
+                    this.snackBar.color = "error";
+                    this.$store.dispatch("showSnackBar", this.snackBar);
+                });
+        },
         addQuestion(item) {
-            var newItem = Object.assign({}, item);
+            const newItem = JSON.parse(JSON.stringify(item));
 
             if (newItem.id == null) {
                 newItem.id = this.newQuestionKey + 1;
                 this.newQuestionKey++;
             }
             this.$emit('addQuestion', newItem);
-        }
+        },
+        addNewQuestion(item) {
+            const newItem = {
+                questionId: (this.newQuestionKey++) + 1,
+                questionName: null,
+                questionType: item.type,
+                questionAnswers: [],
+                chartType: null,
+            }
+            this.$emit('addQuestion', newItem);
+        },
     }
 }
 </script>
@@ -122,5 +102,10 @@ export default {
 <style>
 .margin {
     margin-top: 20px;
+}
+
+.fixed {
+    position: absolute;
+    top: 80px;
 }
 </style>

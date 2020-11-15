@@ -1,6 +1,6 @@
 <template>
-<div class="questionbox">
-    <div class="text">{{ questionNumber + 1 }}. {{ questionText }}</div>
+<div class="question">
+    <div class="text">{{ questionText }}</div>
     <div class="answer">
         <v-radio-group v-model="radioGroup">
             <v-radio v-for="(n, i) in items" :key="i" :label="n" :value="n"></v-radio>
@@ -11,49 +11,53 @@
 
 <script>
 export default {
-    // nazwa komponentu
     name: "Radio",
     props: {
-        questionNumber: Number, // Numer pytania -> otrzymuje z pętli pytan z rodzica
-        questionPosition: Number,
-        questionId: Number, // Id pytania z bazy danych
-        questionName: String, // Nazwa pytania z bazy danych
-        questionAnswers: Array, // tablica dostepnych odpowiedzi z bazy danych
+        questionId: Number,
+        questionName: String,
+        questionAnswers: Array,
     },
     data() {
-        // tablica potrzebna do obrobienia talibcy propsow bo tam dostaje talibce obiektow a ja potrzebuje tablice stringow
         let answers = [];
-        // petla po tablicy obiektow z propsow
         this.questionAnswers.forEach((e) => {
+            console.log(e);
             answers.push(e.answerName);
         });
 
         return {
-            questionText: this.questionName, // opis pytania
-            items: answers, // tablica tekstowa z dostepnymi odpowiedziami
-            radioGroup: 1, // model dla radio inputa
+            questionText: this.questionName,
+            items: answers,
+            radioGroup: 1,
         };
     },
     watch: {
-        // ustawienie watchera na model inputa o typie radio, przyjmuje dwie wartosci stara i nowa
         radioGroup(newValue, oldValue) {
-            // porowannie wartosci zmiennej ktorej dotyczy newValue i oldValue
             if (oldValue !== newValue) {
-                // jezeli sie cos zmieni to wywolujemy funkcje ktora emituje nam odpowiedz do rodzica
+                console.log(`Pytanie ID ${this.questionId} odp: ${newValue}`);
                 this.sendAnswer(this.questionId, newValue);
             }
         },
     },
     methods: {
-        // metoda wysylajaca odpowiedz do rodzica, przyjmuje id pytania (z bazy) i odpowiedz udzieloną przez uzytkownika
         sendAnswer(id, answer) {
-            // emitujemy do rodzica z payloadem
-            this.$emit("save", id, answer, this.questionPosition);
+            this.$emit("save", id, answer);
         },
     },
 };
 </script>
 
-<style lang="scss">
-// style globalne dla 3 komponeotw formularzowych jest w Select
+<style>
+.question {
+    width: 90%;
+    margin: 20px 20px;
+    padding: 10px 10px;
+    background-color: #f0f7f4;
+    border-radius: 10px;
+
+}
+
+.text {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
 </style>

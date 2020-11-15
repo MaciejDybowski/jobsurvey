@@ -7,15 +7,19 @@
         <v-col>
             <SurveyHeader :surveyInfo="surveyInfo" />
             <v-divider></v-divider>
+            <v-list v-for="item in surveyDefaultQuestion" :key="item.questionId">
+                <DefaultQuestion :item="item" />
+            </v-list>
+            <v-divider></v-divider>
             <drop-list :items="surveyQuestions" @reorder="$event.apply(surveyQuestions)">
                 <template v-slot:item="{item}">
-                    <drag :key="item.id" :data="item">
-                        <Question :item="item" @deleteQuestion="deleteQuestion" />
+                    <drag :key="item.questionId" :data="item">
+                        <EditQuestion :item="item" @deleteQuestion="deleteQuestion" />
                     </drag>
                 </template>
             </drop-list>
             <v-divider></v-divider>
-            <v-btn x-large color="success" dark>
+            <v-btn x-large block :loading="loadingSend" color="success" dark @click="sendNewSurvey">
                 Save Survey
             </v-btn>
         </v-col>
@@ -28,35 +32,102 @@ import {
     Drag,
     DropList
 } from "vue-easy-dnd";
-import Question from './Questions/Question.vue';
+import EditQuestion from './Questions/EditQuestion.vue';
+import DefaultQuestion from './Questions/DefaultQuestion.vue'
 import LeftPanel from './LeftPanel.vue';
 import SurveyHeader from './Questions/SurveyHeader.vue';
+import defaultQuestions from '../../../assets/newSurveyTemplate.js';
+import axios from 'axios';
 export default {
     name: "AddSurvey",
     components: {
         Drag,
         DropList,
-        Question,
+        EditQuestion,
+        DefaultQuestion,
         LeftPanel,
-        SurveyHeader
+        SurveyHeader,
     },
     data() {
         return {
             surveyInfo: {
-                name: null,
-                description: null,
+                surveyId: null,
+                surveyName: null,
+                surveyDescription: null,
             },
+            surveyDefaultQuestion: defaultQuestions,
             surveyQuestions: [],
+            snackBar: this.$store.getters.snackBar,
+            loadingSend: false
         }
     },
     methods: {
         addQuestion(item) {
             this.surveyQuestions.splice(this.surveyQuestions.length, 0, item);
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            })
+            this.snackBar.show = true;
+            this.snackBar.infoText = "Question add";
+            this.snackBar.color = "success";
+            this.$store.dispatch("showSnackBar", this.snackBar);
+
         },
         deleteQuestion(item) {
-            var index = this.surveyQuestions.findIndex(element => element == item)
+            let index = this.surveyQuestions.findIndex(element => element == item)
             this.surveyQuestions.splice(index, index + 1);
-        }
+        },
+        async sendNewSurvey() {
+            if (this.surveyInfo.surveyName == "" || this.surveyInfo.surveyDescription == "") {
+                this.snackBar.show = true;
+                this.snackBar.infoText = "You must enter a survey name and description.";
+                this.snackBar.color = "error";
+                this.$store.dispatch("showSnackBar", this.snackBar);
+
+            } else {
+                this.loadingSend = true
+                var sendData = {};
+                sendData.surveyId = 'survey' + Math.random(Math.random() * 1000) + 1;
+                sendData.surveyName = this.surveyInfo.surveyName;
+                sendData.surveyDescription = this.surveyInfo.surveyDescription;
+                var questionsList = this.surveyDefaultQuestion;
+                var lastQuestions = questionsList.length;
+                for (var i = 0; i < this.surveyQuestions.length; i++) {
+                    this.surveyQuestions[i].questionPosition = lastQuestions++;
+                    if (this.surveyQuestions[i].chartType == null) {
+                        this.surveyQuestions[i].chartType = 'bar';
+                    }
+                }
+
+                questionsList = questionsList.concat(this.surveyQuestions);
+                sendData.questions = questionsList;
+                console.log(JSON.stringify(sendData))
+                await axios({
+                        method: "post",
+                        url: `http://192.168.4.6:8080/surveys`,
+                        data: sendData,
+                    })
+                    .then(() => {
+                        this.loadingSend = false;
+                        this.snackBar.show = true;
+                        this.snackBar.infoText = "Survey was add";
+                        this.snackBar.color = "success";
+                        this.$store.dispatch("showSnackBar", this.snackBar);
+                        this.$router.push('/dashboard');
+
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        this.snackBar.show = true;
+                        this.snackBar.infoText = "Error";
+                        this.snackBar.color = "error";
+                        this.$store.dispatch("showSnackBar", this.snackBar);
+                        this.loadingSend = false;
+                    })
+            }
+
+        },
     }
 }
 </script>

@@ -6,17 +6,20 @@
             <SurveyList />
         </div>
     </v-main>
+    <SnackBar :snackBar="this.$store.getters.snackBar" />
 </v-app>
 </template>
 
 <script>
 import TopNav from '../../components/Dashboard/TopNav.vue'
 import SurveyList from '../../components/Dashboard/SurveyList.vue'
+import SnackBar from '../../components/Dashboard/Dialogs/SnackBarInfo.vue';
 export default {
     name: "Dashboard",
     components: {
         TopNav,
-        SurveyList
+        SurveyList,
+        SnackBar,
     },
     data: () => ({
         topBarTitle: "Dashboard",

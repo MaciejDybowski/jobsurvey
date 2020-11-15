@@ -19,7 +19,14 @@ export default new Vuex.Store({
       token: '',
       expireTime: '',
       name: '',
-    }
+    },
+    serverUrl: 'http://192.168.4.6:8080',
+    snackBar: {
+      show: false,
+      timeout: 2000,
+      color: null,
+      infoText: null
+    },
   },
   mutations: {
     authUser(state, payload) {
@@ -33,6 +40,9 @@ export default new Vuex.Store({
 
     handleErr(state) {
       state.user.loginErr = true
+    },
+    setSnackBar(state, payload){
+      state.snackBar = payload;
     }
   },
   actions: {
@@ -54,10 +64,14 @@ export default new Vuex.Store({
           console.log('mamy error')
           commit('handleErr')
         })
+    },
+    showSnackBar({commit}, payload) {
+      commit('setSnackBar', payload);
     }
   },
   getters: {
     isUserAuth: state => state.user.isAuth,
-    loginWithErr: state => state.user.loginErr
+    loginWithErr: state => state.user.loginErr,
+    snackBar: state => state.snackBar
   }
 })
