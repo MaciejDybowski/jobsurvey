@@ -1,55 +1,59 @@
 <template>
-<v-data-table :headers="headers" :items="surveys" sort-by="dataCreated" class="elevation-1">
-    <template v-slot:top>
-        <v-toolbar flat>
-            <v-toolbar-title>Surveys</v-toolbar-title>
-            <v-divider class="mx-4" inset vertical></v-divider>
-            <v-spacer></v-spacer>
-
-            <template>
-                <v-btn color="primary" dark class="mb-5" @click="newSurvey">
-                    New Survey
-                </v-btn>
-            </template>
+<div>
+    <v-data-table :headers="headers" :loading="dataLoading" loading-text="Loading... Please wait" :items="surveyList" sort-by="dataCreated">
+        <template v-slot:top>
             <v-toolbar flat>
-                <v-dialog v-model="dialogDelete" max-width="500px">
-                    <v-card>
-                        <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                            <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                            <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
+                <v-toolbar-title>Surveys</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
+                <v-spacer></v-spacer>
+
+                <template>
+                    <v-btn color="primary" dark class="mb-5" @click="newSurvey">
+                        New Survey
+                    </v-btn>
+                </template>
             </v-toolbar>
-        </v-toolbar>
-    </template>
-    <template v-slot:item.actions="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">
-            mdi-pencil
-        </v-icon>
-        <v-icon small class="mr-2" @click="deleteItem(item)">
-            mdi-delete
-        </v-icon>
-        <v-icon small class="mr-2" @click="generatePdf(item)">
-            mdi-file-pdf
-        </v-icon>
-        <v-icon small @click="generatePdf(item)">mdi-attachment</v-icon>
-    </template>
-    <template v-slot:no-data>
-        No data
-    </template>
-</v-data-table>
+        </template>
+        <template v-slot:item.actions="{ item }">
+            <v-icon small class="mr-2" @click="editItem(item)">
+                mdi-pencil
+            </v-icon>
+            <v-icon small class="mr-2" @click="deleteItem(item)">
+                mdi-delete
+            </v-icon>
+            <v-icon small class="mr-2" @click="generatePdf(item)">
+                mdi-file-pdf
+            </v-icon>
+            <v-icon small @click="copyLinkToClipboard(item)">mdi-attachment</v-icon>
+        </template>
+        <template v-slot:no-data>
+            No data
+        </template>
+
+    </v-data-table>
+    <DeleteDialog :dialogDelete="dialogDelete" @deleteItemConfirm="deleteItemConfirm" />
+    <SnackBarInfo :snackBar="snackBar" />
+</div>
 </template>
 
 <script>
+import axios from 'axios';
+import SnackBarInfo from './Dialogs/SnackBarInfo.vue';
+import DeleteDialog from './Dialogs/DeleteDialog.vue';
 export default {
     name: 'SurveyList',
+    components: {
+        DeleteDialog,
+        SnackBarInfo
+    },
     data() {
         return {
-            dialogDelete: false,
+            snackBar: this.$store.getters.snackBar,
+            dataLoading: false,
+            dialogDelete: {
+                show: false,
+                infoText: null
+            },
             headers: [{
                     text: 'Survey name',
                     align: 'start',
@@ -66,61 +70,57 @@ export default {
                     sortable: false
                 },
             ],
-            surveys: [],
+            surveyList: [],
         }
     },
-    watch: {
-        dialogDelete(val) {
-            val || this.closeDelete()
-        },
-    },
     created() {
-        this.initialize()
+        this.fetchSurveyList()
     },
     methods: {
-        initialize() {
-            this.surveys = [{
-                    id: 1,
-                    surveyName: 'Survey for DevOps',
-                    dataCreated: "3.11.2020",
-                },
-                {
-                    id: 2,
-                    surveyName: 'Survey for Vue Programmers',
-                    dataCreated: "2.11.2020",
-                },
-                {
-                    id: 3,
-                    surveyName: 'Survey for UX Designer',
-                    dataCreated: "4.11.2020",
-                }
-            ]
+        async fetchSurveyList() {
+            this.dataLoading = true;
+            await axios
+                .get(this.$store.state.serverUrl + '/surveys', {
+                    crossDomain: true
+                })
+                .then((res) => {
+                    this.dataLoading = false;
+                    console.log(res.data)
+                    this.surveyList = res.data;
+                })
+                .catch(() => {
+                    this.dataLoading = false;
+
+                });
         },
         editItem(item) {
-            this.$router.push("/dashboard/survey/editSurvey/" + item.id)
-            console.log(item)
+            this.$router.push("/dashboard/survey/editSurvey/" + item.surveyId)
         },
         deleteItem(item) {
-            this.editedIndex = this.desserts.indexOf(item)
-            this.editedItem = Object.assign({}, item)
+            this.dialogDelete.item = item;
+            this.dialogDelete.infoText = "Are you sure?";
             this.dialogDelete = true
         },
         deleteItemConfirm() {
-            this.desserts.splice(this.editedIndex, 1)
+            this.surveys.splice(this.editedIndex, 1)
             this.closeDelete()
-        },
-        closeDelete() {
-            this.dialogDelete = false
-            this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
-            })
         },
         newSurvey() {
             this.$router.push("/dashboard/survey/addSurvey")
         },
         generatePdf(item) {
             console.log(item)
+        },
+        copyLinkToClipboard(item) {
+            const copyhelper = document.createElement("input");
+            copyhelper.className = 'copyhelper'
+            document.body.appendChild(copyhelper);
+            copyhelper.value = item.surveyName;
+            copyhelper.select();
+            document.execCommand("copy");
+            document.body.removeChild(copyhelper);
+            this.snackBar.infoText = "Link copied";
+            this.snackBar.show = true;
         }
     },
 }

@@ -4,7 +4,7 @@
         <v-btn v-if="survey" icon @click="returnDashboard">
             <v-icon>mdi-keyboard-return</v-icon>
         </v-btn>
-        <v-toolbar-title>{{title}}</v-toolbar-title>
+        <v-toolbar-title>{{this.$router.history.current.name}}</v-toolbar-title>
         <v-spacer></v-spacer>
 
         <v-menu bottom min-width="200px" rounded offset-y>
@@ -41,7 +41,7 @@
 <script>
 export default {
     name: "DashboardNav",
-    props: ['title', 'survey'],
+    props: ['survey'],
     data: () => ({
         user: {
             initials: 'PW',
@@ -63,5 +63,9 @@ export default {
 </script>
 
 <style>
-
+.fluid {
+    position: fixed;
+    display: block;
+    top: 0px;
+}
 </style>
