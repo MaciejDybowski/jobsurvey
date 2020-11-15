@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Programmer from '../views/Programmer.vue'
 import SingleSurvey from '../views/SingleSurvey.vue'
+import SurveySubmit from '../views/SurveySubmit.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,12 @@ const routes = [
     path: '/singlesurvey/:hash',
     name: 'SingleSurvey',
     component: SingleSurvey,
+    props: true,
+  },
+  {
+    path: '/surveySubmit',
+    name: 'surveySubmit',
+    component: SurveySubmit,
     props: true,
   },
   {
