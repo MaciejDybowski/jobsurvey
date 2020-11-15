@@ -2,10 +2,7 @@
   <div class="chartbox" v-if="loader">
     <div class="text">
       <p>
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Itaque porro
-        illo doloremque, quae maiores incidunt mollitia. Velit amet error ea
-        eveniet, doloribus eum dolorem ad, perspiciatis molestiae labore
-        mollitia! Aut!
+        {{ questionDescription }}
       </p>
     </div>
     <div class="chart">
@@ -22,6 +19,11 @@ export default {
   components: {
     Bar,
   },
+  props: {
+    chartDataAnswers: Array,
+    chartResultData: Array,
+    questionDescription: String,
+  },
   data() {
     return {
       chartData: null,
@@ -36,27 +38,17 @@ export default {
   methods: {
     fillData() {
       this.chartData = {
-        labels: [
-          "Data One",
-          "Data Two",
-          "Data 3",
-          "Data 4",
-          "Data 5",
-          "Data 6",
-          "Data 7",
-        ],
+        labels: this.chartDataAnswers,
         datasets: [
           {
             barPercentage: 1,
             barThickness: 50,
             maxBarThickness: 50,
             minBarLength: 1,
-            backgroundColor: getColorTable(7),
-            data: [10, 20, 30, 40, 50, 60, 70],
+            backgroundColor: getColorTable(this.chartDataAnswers.length),
+            data: this.chartResultData,
 
-            label: "Pierwszy zestaw danych",
-            xAxisID: 0,
-            yAxisID: 0,
+            label: this.questionDescription,
           },
         ],
       };
@@ -65,10 +57,23 @@ export default {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
+          yAxes: [
+            {
+              ticks: {
+                fontColor: "white",
+                fontSize: 14,
+                stepSize: 10,
+                beginAtZero: true,
+              },
+            },
+          ],
           xAxes: [
             {
-              gridLines: {
-                offsetGridLines: true,
+              ticks: {
+                fontColor: "white",
+                fontSize: 14,
+                stepSize: 10,
+                beginAtZero: true,
               },
             },
           ],
@@ -80,24 +85,4 @@ export default {
 </script>
 
 <style lang='scss'>
-.chartbox {
-  width: 90%;
-  height: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 20px;
-  padding: 20px 20px;
-  background-color: rgb(40, 42, 72);
-  color: rgb(197, 197, 197);
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  .text {
-    p {
-      text-align: justify;
-    }
-  }
-}
 </style>

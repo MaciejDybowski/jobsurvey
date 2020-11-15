@@ -5,6 +5,7 @@ import Login from '../views/Login.vue'
 import Programmer from '../views/Programmer.vue'
 import SingleSurvey from '../views/SingleSurvey.vue'
 import SurveySubmit from '../views/SurveySubmit.vue'
+import ThanksForAnswers from '../views/ThanksForAnswers.vue'
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,12 @@ const routes = [
     path: '/surveySubmit',
     name: 'surveySubmit',
     component: SurveySubmit,
+    props: true,
+  },
+  {
+    path: '/thanks',
+    name: 'thanks',
+    component: ThanksForAnswers,
     props: true,
   },
   {

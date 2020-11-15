@@ -1,7 +1,7 @@
 <template>
   <div class="wrapperThanks">
     <v-card elevation="2">
-      <v-card-title>Dziękujemy za Twoje odpowiedzi.</v-card-title>
+      <v-card-title>Odpowiedziałeś już na tą ankietę, dziękujemy!</v-card-title>
       <v-card-actions
         ><router-link to="/">Strona główna</router-link></v-card-actions
       >

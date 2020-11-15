@@ -92,24 +92,4 @@ export default {
 </script>
 
 <style lang='scss'>
-.chartbox {
-  width: 90%;
-  height: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 20px;
-  padding: 20px 20px;
-  background-color: rgb(40, 42, 72);
-  color: rgb(197, 197, 197);
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  .text {
-    p {
-      text-align: justify;
-    }
-  }
-}
 </style>

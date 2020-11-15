@@ -97,20 +97,22 @@ export default {
     };
   },
   beforeMount() {
+    // jezeli nie ma sesji dla zwykłego usera to znaczy ze to jego pierwsza ankieta w ktorej bierze udzial
     if (!this.$session.exists()) {
       this.$session.start();
     }
 
-    console.log(this.$session.get("isAnswerSent"));
-    if (this.$session.get("isAnswerSend") === true) {
-      this.$router.push("/");
-    } else {
-      this.$session.set("isAnswerSend", false);
-    }
+    // pobieram tablice hashow na ktore odpowiedzi user odpowiedzial
+    const securityTable = this.$session.get("surveySecure");
+    // sprawdzenie tablicy a aktualnym hashem -> jesli znajduje sie na liscie i wyslal juz odpowiedzi to przekierowanie na podziekowania
+    securityTable.forEach((survey) => {
+      if (survey.hash === this.$route.params.hash && survey.isAnswerSend) {
+        //this.$router.push("/thanks");
+      }
+    });
   },
   mounted() {
     const hash = this.$route.params.hash;
-
     axios
       .get(`http://192.168.4.6:8080/surveys/${hash}/questions`, {
         crossDomain: true,
@@ -182,8 +184,16 @@ export default {
           data: survey,
         })
           .then((res) => {
-            //this.$cookie.set("isAnswerSend", true);
-            this.$session.set("isAnswerSend", true);
+            const securityObj = {
+              hash: this.apiCall,
+              isAnswerSend: true,
+            };
+            // tablica zabezpieczen dla wielokrotnego odpalenia tej samej ankiety
+            let tempArray = [];
+            // pobieramy co aktualnie tam jest,
+            tempArray = this.$session.get("surveySecure");
+            tempArray.push(securityObj);
+            this.$session.set("surveySecure", tempArray);
             this.$router.push("/surveySubmit");
             console.log(res);
             return res;

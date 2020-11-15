@@ -28,34 +28,33 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="2">
-            <v-sheet rounded="lg">
-              <v-list color="transparent">
-                <v-list-item v-for="n in 5" :key="n" link>
-                  <v-list-item-content>
-                    <v-list-item-title> List Item {{ n }} </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-
-                <v-divider class="my-2"></v-divider>
-
-                <v-list-item link color="grey lighten-4">
-                  <v-list-item-content>
-                    <v-list-item-title> Refresh </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-sheet>
-          </v-col>
-
           <v-col>
             <v-sheet min-height="70vh" rounded="lg">
               <!--  -->
-              <div class="wrapper">
-                <DoughnutBox />
-                <BarBox />
-                <MultiBarBox />
-                <HorizontalBatBox />
+              <div class="wrapper" v-for="(question, i) in questions" :key="i">
+                <div v-if="question.chartType === 'doughnut'">
+                  <DoughnutBox
+                    :chartDataAnswers="question.answers"
+                    :chartResultData="question.results"
+                    :questionDescription="question.question"
+                  />
+                </div>
+                <div v-else-if="question.chartType === 'bar'">
+                  <BarBox
+                    :chartDataAnswers="question.answers"
+                    :chartResultData="question.results"
+                    :questionDescription="question.question"
+                  />
+                </div>
+                <div v-else-if="question.chartType === 'horizontalbar'">
+                  <HorizontalBatBox
+                    :chartDataAnswers="question.answers"
+                    :chartResultData="question.results"
+                    :questionDescription="question.question"
+                  />
+                </div>
+
+                <!---<MultiBarBox />-->
               </div>
             </v-sheet>
           </v-col>
@@ -68,20 +67,43 @@
 <script>
 import DoughnutBox from "../components/ChartBox/DoughnutBox.vue";
 import BarBox from "../components/ChartBox/BarBox.vue";
-import MultiBarBox from "../components/ChartBox/MultiBarBox";
+//import MultiBarBox from "../components/ChartBox/MultiBarBox";
 import HorizontalBatBox from "../components/ChartBox/HorizontalBarBox";
+import axios from "axios";
 
 export default {
   name: "Programmer",
   components: {
     DoughnutBox,
     BarBox,
-    MultiBarBox,
+    //MultiBarBox,
     HorizontalBatBox,
   },
-  data: () => ({
-    links: ["Badanie IT", "Strona bulldoga"],
-  }),
+  data() {
+    return {
+      links: ["Badanie IT", "Strona bulldoga"],
+      questions: null,
+    };
+  },
+  mounted() {
+    axios
+      .get(
+        `http://192.168.4.6:8080/surveys/survey0.471107988201993071/charts`,
+        {
+          crossDomain: true,
+        }
+      )
+
+      .then((res) => {
+        this.questions = res.data;
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    this.flag = true;
+  },
 };
 </script>
 
@@ -117,6 +139,7 @@ export default {
     a {
       color: purple !important;
     }
+
     border: 2px solid purple !important;
   }
 }
