@@ -6,12 +6,15 @@
         </v-col>
 
         <v-col>
+        
             <SurveyHeader :surveyInfo="surveyInfo" />
             <v-divider></v-divider>
+            <h1>Default questions</h1>
             <v-list v-for="item in surveyDefaultQuestion" :key="item.questionId">
                 <DefaultQuestion :item="item" />
             </v-list>
             <v-divider></v-divider>
+            <h1>Modify your questions</h1>
             <drop-list :items="surveyQuestions" @reorder="$event.apply(surveyQuestions)">
                 <template v-slot:item="{item}">
                     <drag :key="item.questionId" :data="item">
@@ -58,12 +61,22 @@ export default {
             surveyDefaultQuestion: defaultQuestions,
             surveyQuestions: [],
             loadingEdit: false,
-            loadingData: false,
             snackBar: this.$store.getters.snackBar,
         }
     },
     created() {
         this.fetchSurvey();
+    },
+    computed: {
+        updateQuestion: {
+            get: function(index){
+                return this.surveyQuestions[index]
+            },
+            set: function(item){
+                let index = this.surveyQuestions.findIndex(element => element.questionPosition == item.questionPosition);
+                 this.surveyQuestions[index] = item;
+            }
+        }
     },
     methods: {
         async fetchSurvey() {
@@ -73,7 +86,6 @@ export default {
                     crossDomain: true,
                 })
                 .then((res) => {
-                    console.log(res.data);
                     this.surveyInfo = {
                         surveyId: res.data.surveyId,
                         surveyName: res.data.surveyName,
@@ -83,7 +95,7 @@ export default {
                     this.surveyQuestions.splice(0, 6);
                     this.loadingData = false;
                 })
-                .catch((err) => console.log(err));
+                .catch(() => {});
         },
         addQuestion(item) {
             item.newQuestion = true;
@@ -95,13 +107,14 @@ export default {
         },
         deleteQuestion(item) {
             let index = this.surveyQuestions.findIndex(element => element == item)
-            this.surveyQuestions.splice(index, index + 1);
+            this.surveyQuestions.splice(index, 1);
             this.snackBar.show = true;
             this.snackBar.infoText = "Question delete";
             this.snackBar.color = "success";
             this.$store.dispatch("showSnackBar", this.snackBar);
         },
-        editSurvey() {
+        async editSurvey() {
+            this.loadingEdit = true;
             const newQuestions = [];
             for (const item of this.surveyQuestions) {
                 if (item.newQuestion == true) {
@@ -110,28 +123,68 @@ export default {
                 delete(item.newQuestion);
             }
 
-            const questionsPosition = [];
-            let i = this.surveyDefaultQuestion.length + 1;
-            for (const item of this.surveyQuestions) {
-                const newItem = {}
-                newItem.questionId = item.questionId;
-                newItem.questionsPosition = i++;
-                questionsPosition.splice(questionsPosition.length, 0, newItem);
-            }
-            console.log(questionsPosition);
+            const sendData = {};
+            sendData.surveyId = this.$route.params.id;
+            sendData.surveyDescription = this.surveyInfo.surveyDescription;
+            sendData.surveyName = this.surveyInfo.surveyName;
+            sendData.questions = newQuestions;
+            await axios({
+                        method: "post",
+                        url: `http://192.168.4.6:8080/surveys`,
+                        data: sendData,
+            }).then(async (response) => {
 
-            this.snackBar.show = true;
-            this.snackBar.infoText = "Survey edit";
-            this.snackBar.color = "success";
-            this.$store.dispatch("showSnackBar", this.snackBar);
-            this.$router.push('/dashboard');
+                for(let i = 0; i < response.data.length; i++){
+                    newQuestions[i].questionId = response.data[i];
+                }
+
+
+                const questionsPosition = [];
+                let i = this.surveyDefaultQuestion.length + 1;
+                for (const item of this.surveyQuestions) {
+                    const newItem = {}
+                    newItem.surveyId = this.$route.params.id;
+                    newItem.questionId = item.questionId;
+                    newItem.questionPosition = i++;
+                    questionsPosition.splice(questionsPosition.length, 0, newItem);
+                }
+                await this.setPosition(questionsPosition);
+            
+            })
+            .catch(() => {
+                this.loadingEdit = false;
+                this.snackBar.show = true;
+                this.snackBar.infoText = "Error";
+                this.snackBar.color = "error";
+                this.$store.dispatch("showSnackBar", this.snackBar);
+            })
+            
+        },
+        async setPosition(questionsPosition){
+            await axios({
+                        method: "put",
+                        url: `http://192.168.4.6:8080/surveys/${this.$route.params.id}/questions/orders`,
+                        data: questionsPosition,
+                })
+                .then(() => {
+                    this.loadingEdit = false;
+                    this.snackBar.show = true;
+                    this.snackBar.infoText = "Survey edit";
+                    this.snackBar.color = "success";
+                    this.$store.dispatch("showSnackBar", this.snackBar);
+                    //this.$router.push('/dashboard');
+                })
+                .catch(() => {
+                    this.loadingEdit = false;
+                    this.snackBar.show = true;
+                    this.snackBar.infoText = "Error";
+                    this.snackBar.color = "error";
+                    this.$store.dispatch("showSnackBar", this.snackBar);
+                })
         },
         editQuestion(item) {
-            console.log(item);
-            let index = this.surveyQuestions.findIndex(element => element.questionId == item.questionId);
-            console.log(index);
-            this.surveyQuestions[index] = item;
-        }
+            this.updateQuestion = item;
+        },
     }
 }
 </script>

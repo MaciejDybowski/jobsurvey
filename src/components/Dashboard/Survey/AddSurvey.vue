@@ -7,10 +7,12 @@
         <v-col>
             <SurveyHeader :surveyInfo="surveyInfo" />
             <v-divider></v-divider>
+            <h1>Default questions</h1>
             <v-list v-for="item in surveyDefaultQuestion" :key="item.questionId">
                 <DefaultQuestion :item="item" />
             </v-list>
             <v-divider></v-divider>
+            <h1>Add your questions</h1>
             <drop-list :items="surveyQuestions" @reorder="$event.apply(surveyQuestions)">
                 <template v-slot:item="{item}">
                     <drag :key="item.questionId" :data="item">
@@ -102,7 +104,6 @@ export default {
 
                 questionsList = questionsList.concat(this.surveyQuestions);
                 sendData.questions = questionsList;
-                console.log(JSON.stringify(sendData))
                 await axios({
                         method: "post",
                         url: `http://192.168.4.6:8080/surveys`,
@@ -117,8 +118,7 @@ export default {
                         this.$router.push('/dashboard');
 
                     })
-                    .catch((err) => {
-                        console.log(err);
+                    .catch(() => {
                         this.snackBar.show = true;
                         this.snackBar.infoText = "Error";
                         this.snackBar.color = "error";

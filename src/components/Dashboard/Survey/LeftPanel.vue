@@ -90,6 +90,7 @@ export default {
                 questionId: (this.newQuestionKey++) + 1,
                 questionName: null,
                 questionType: item.type,
+                questionPosition: this.newQuestionKey,
                 questionAnswers: [],
                 chartType: null,
             }
