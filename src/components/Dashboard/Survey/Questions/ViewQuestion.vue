@@ -1,5 +1,5 @@
 <template>
-<v-card class="question" fluid>
+<v-card class="question margin" fluid>
     <v-icon medium>mdi-dots-horizontal</v-icon>
     <v-row>
         <v-col>
@@ -128,7 +128,8 @@ export default {
                     url: `${this.$store.state.serverUrl}/surveys/${this.$route.params.id}/questions/${this.editDialog.data.questionId}`,
                     data: this.editDialog.data
                 })
-                .then(() => {
+                .then((response) => {
+                    this.editDialog.data.questionId = response.data;
                     this.$emit('editQuestion', this.editDialog.data);
                     this.item = this.editDialog.data;
                     this.editDialog.show = false;
@@ -139,7 +140,6 @@ export default {
                     this.$store.dispatch("showSnackBar", this.snackBar);
                 })
                 .catch((err) => {
-                    this.editDialog.data = this.editDialog.oldData;
                     this.editDialog.loading = false;
                     this.snackBar.show = true;
                     this.snackBar.color = "error"
@@ -154,5 +154,7 @@ export default {
 </script>
 
 <style>
-
+.margin {
+    margin-top: 50px;
+}
 </style>

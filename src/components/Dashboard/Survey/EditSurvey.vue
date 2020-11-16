@@ -6,12 +6,15 @@
         </v-col>
 
         <v-col>
+        
             <SurveyHeader :surveyInfo="surveyInfo" />
             <v-divider></v-divider>
+            <h1>Default questions</h1>
             <v-list v-for="item in surveyDefaultQuestion" :key="item.questionId">
                 <DefaultQuestion :item="item" />
             </v-list>
             <v-divider></v-divider>
+            <h1>Modify your questions</h1>
             <drop-list :items="surveyQuestions" @reorder="$event.apply(surveyQuestions)">
                 <template v-slot:item="{item}">
                     <drag :key="item.questionId" :data="item">
@@ -58,7 +61,6 @@ export default {
             surveyDefaultQuestion: defaultQuestions,
             surveyQuestions: [],
             loadingEdit: false,
-            loadingData: false,
             snackBar: this.$store.getters.snackBar,
         }
     },
@@ -101,7 +103,7 @@ export default {
             this.snackBar.color = "success";
             this.$store.dispatch("showSnackBar", this.snackBar);
         },
-        editSurvey() {
+        async editSurvey() {
             const newQuestions = [];
             for (const item of this.surveyQuestions) {
                 if (item.newQuestion == true) {
@@ -110,26 +112,51 @@ export default {
                 delete(item.newQuestion);
             }
 
-            const questionsPosition = [];
-            let i = this.surveyDefaultQuestion.length + 1;
-            for (const item of this.surveyQuestions) {
-                const newItem = {}
-                newItem.questionId = item.questionId;
-                newItem.questionsPosition = i++;
-                questionsPosition.splice(questionsPosition.length, 0, newItem);
-            }
-            console.log(questionsPosition);
 
+            await axios({
+
+            }).then((response) => {
+
+                for(i = 0; i < response.data.length; i++){
+                    newQuestions[i].questionId = response.data[i];
+                }
+
+                const questionsPosition = [];
+                let i = this.surveyDefaultQuestion.length + 1;
+                for (const item of this.surveyQuestions) {
+                    const newItem = {}
+                    newItem.surveyId = this.$route.params.id;
+                    newItem.questionId = item.questionId;
+                    newItem.questionsPosition = i++;
+                    questionsPosition.splice(questionsPosition.length, 0, newItem);
+                }
+
+
+                await axios({
+
+                })
+                .then(() => {
+                    this.snackBar.show = true;
+                    this.snackBar.infoText = "Survey edit";
+                    this.snackBar.color = "success";
+                    this.$store.dispatch("showSnackBar", this.snackBar);
+                    this.$router.push('/dashboard');
+                })
+                .catch(() => {
+
+                })
+            
+            })
+            .catch(() => {
             this.snackBar.show = true;
-            this.snackBar.infoText = "Survey edit";
-            this.snackBar.color = "success";
+            this.snackBar.infoText = "Error";
+            this.snackBar.color = "error";
             this.$store.dispatch("showSnackBar", this.snackBar);
-            this.$router.push('/dashboard');
+            })            
         },
         editQuestion(item) {
             console.log(item);
-            let index = this.surveyQuestions.findIndex(element => element.questionId == item.questionId);
-            console.log(index);
+            let index = this.surveyQuestions.findIndex(element => element.questionsPosition == item.questionsPosition);
             this.surveyQuestions[index] = item;
         }
     }
