@@ -21,9 +21,6 @@
             <v-icon small class="mr-2" @click="deleteItem(item)">
                 mdi-delete
             </v-icon>
-            <v-icon small class="mr-2" @click="generatePdf(item)">
-                mdi-file-pdf
-            </v-icon>
             <v-icon small @click="copyLinkToClipboard(item)">mdi-attachment</v-icon>
         </template>
         <template v-slot:no-data>
@@ -52,7 +49,9 @@ export default {
             dataLoading: false,
             dialogDelete: {
                 show: false,
-                infoText: null
+                infoText: null,
+                loading: false,
+                item: null,
             },
             headers: [{
                     text: 'Survey name',
@@ -85,7 +84,6 @@ export default {
                 })
                 .then((res) => {
                     this.dataLoading = false;
-                    console.log(res.data)
                     this.surveyList = res.data;
                 })
                 .catch(() => {
@@ -99,17 +97,37 @@ export default {
         deleteItem(item) {
             this.dialogDelete.item = item;
             this.dialogDelete.infoText = "Are you sure?";
-            this.dialogDelete = true
+            this.dialogDelete.show = true
         },
-        deleteItemConfirm() {
-            this.surveys.splice(this.editedIndex, 1)
-            this.closeDelete()
+        async deleteItemConfirm() {
+            //this.surveys.splice(this.editedIndex, 1)
+            this.dialogDelete.loading = true;
+            await axios({
+                method: "delete",
+                url: `http://192.168.4.6:8080/surveys/${this.dialogDelete.item.surveyId}`,
+                data: null
+            })
+            .then(()=>{
+                this.dialogDelete.show = false;
+                this.dialogDelete.loading = false;
+                let index = this.surveyList.findIndex(element => element == this.dialogDelete.item)
+                this.surveyList.splice(index, 1);
+                this.snackBar.show = true;
+                    this.snackBar.infoText = "Survey delete";
+                    this.snackBar.color = "success";
+                    this.$store.dispatch("showSnackBar", this.snackBar);
+            })
+            .catch(()=>{
+                this.dialogDelete.show = false;
+                this.dialogDelete.loading = false;
+                    this.snackBar.show = true;
+                    this.snackBar.infoText = "Error";
+                    this.snackBar.color = "error";
+                    this.$store.dispatch("showSnackBar", this.snackBar);
+            })
         },
         newSurvey() {
             this.$router.push("/dashboard/survey/addSurvey")
-        },
-        generatePdf(item) {
-            console.log(item)
         },
         copyLinkToClipboard(item) {
             const copyhelper = document.createElement("input");
