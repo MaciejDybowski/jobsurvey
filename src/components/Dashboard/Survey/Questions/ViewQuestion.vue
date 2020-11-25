@@ -104,8 +104,8 @@ export default {
         getQuestionType() {
             this.questionType = questionsType.find(x => x.type === this.item.questionType)
         },
-        deleteQuestion(item) {
-            this.dialogDelete.item = item;
+        deleteQuestion() {
+            this.dialogDelete.item = this.item;
             this.dialogDelete.infoText = "Are you sure ?"
             this.dialogDelete.show = true;
         },
@@ -114,12 +114,16 @@ export default {
             await axios({
                     method: "delete",
                     url: `${this.$store.state.serverUrl}/surveys/${this.$route.params.id}/questions/${this.item.questionId}`,
-                    data: this.dialogDelete.item.questionId
+                    data: this.dialogDelete.item.questionId,
+                    headers: {
+                        Authorization: this.$cookie.get('token')
+                    }
                 })
                 .then(() => {
                     this.$emit('deleteQuestion', this.item);
                     this.dialogDelete.show = false;
                     this.dialogDelete.loading = false;
+                     this.snackBar.show = true;
                 })
                 .catch(() => {
                     this.dialogDelete.show = false;
@@ -137,10 +141,14 @@ export default {
         },
         async editQuestionConfirm() {
             this.editDialog.loading = true;
+            console.log(this.editDialog.data);
             await axios({
                     method: "put",
                     url: `${this.$store.state.serverUrl}/surveys/${this.$route.params.id}/questions/${this.editDialog.data.questionId}`,
-                    data: this.editDialog.data
+                    data: this.editDialog.data,
+                    headers: {
+                        Authorization: this.$cookie.get('token')
+                    }
                 })
                 .then((response) => {
                     this.editDialog.data.questionId = response.data;
@@ -153,12 +161,11 @@ export default {
                     this.$store.dispatch("showSnackBar", this.snackBar);
                 })
                 .catch((err) => {
+                    console.log(err);
                     this.editDialog.loading = false;
                     this.snackBar.show = true;
                     this.snackBar.color = "error"
-                    if (err.request.status == 0) {
-                        this.snackBar.infoText = "Server error";
-                    }
+                    this.snackBar.infoText = "Server error";
                     this.$store.dispatch("showSnackBar", this.snackBar);
                 })
         }

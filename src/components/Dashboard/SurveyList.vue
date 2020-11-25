@@ -87,8 +87,8 @@ export default {
         .get(this.$store.state.serverUrl + "/surveys", {
           crossDomain: true,
           headers: {
-            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNjA2MzM2MTU3fQ.JQ2CKrYVA88Ew36lpf6GknQm2qiIbQedsb9kDLFzqJU`,
-          },
+            Authorization: this.$cookie.get('token')
+          }
         })
 
         .then((res) => {
@@ -108,12 +108,14 @@ export default {
       this.dialogDelete.show = true;
     },
     async deleteItemConfirm() {
-      //this.surveys.splice(this.editedIndex, 1)
       this.dialogDelete.loading = true;
       await axios({
         method: "delete",
-        url: `http://192.168.4.6:8080/surveys/${this.dialogDelete.item.surveyId}`,
+        url: `${this.$store.state.serverUrl}/surveys/${this.dialogDelete.item.surveyId}`,
         data: null,
+        headers: {
+            Authorization: this.$cookie.get('token')
+          }
       })
         .then(() => {
           this.dialogDelete.show = false;
