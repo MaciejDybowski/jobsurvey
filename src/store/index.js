@@ -20,7 +20,7 @@ export default new Vuex.Store({
       expireTime: '',
       name: '',
     },
-    serverUrl: 'http://192.168.4.6:8080',
+    serverUrl: 'http://192.168.4.14:8080',
     snackBar: {
       show: false,
       timeout: 2000,
@@ -41,31 +41,41 @@ export default new Vuex.Store({
     handleErr(state) {
       state.user.loginErr = true
     },
-    setSnackBar(state, payload){
+    setSnackBar(state, payload) {
       state.snackBar = payload;
     }
   },
   actions: {
     login({ commit }, payload) {
-      axios.get(`https://api.github.com/users/${payload.name}`).then(
-        (response) => {
-          const res = response.data
-          const userData = {
-            name: res.name,
-            token: JSON.stringify(res.id),
-            expireTime: '3600s',
-          }
-          commit('authUser', userData);
-          this._vm.$session.start()
-          this._vm.$session.set('user', userData)
-          this._vm.$cookie.set('token', userData.token, { expires: userData.expireTime })
-          router.push('/dashboard')
-        }, () => {
-          console.log('mamy error')
-          commit('handleErr')
-        })
+      //axios.get(`https://api.github.com/users/${payload.name}`).then(
+      axios({
+        method: "post",
+        url: 'http://192.168.4.14:8080/login',
+        data: payload,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      })
+        .then(
+          (response) => {
+            console.log(response.data)
+            const res = response.data
+            const userData = {
+              name: res.name,
+              token: JSON.stringify(res.id),
+              expireTime: '3600s',
+            }
+            commit('authUser', userData);
+            this._vm.$session.start()
+            this._vm.$session.set('user', userData)
+            this._vm.$cookie.set('token', userData.token, { expires: userData.expireTime })
+            router.push('/dashboard')
+          }, () => {
+            console.log('mamy error')
+            commit('handleErr')
+          })
     },
-    showSnackBar({commit}, payload) {
+    showSnackBar({ commit }, payload) {
       commit('setSnackBar', payload);
     }
   },

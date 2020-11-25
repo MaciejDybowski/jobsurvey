@@ -114,7 +114,7 @@ export default {
   mounted() {
     const hash = this.$route.params.hash;
     axios
-      .get(`http://192.168.4.6:8080/surveys/${hash}/questions`, {
+      .get(`http://192.168.4.14:8080/surveys/${hash}/questions`, {
         crossDomain: true,
       })
 
@@ -180,7 +180,7 @@ export default {
         // wysłanie requesta do bazy danych
         axios({
           method: "post",
-          url: `http://192.168.4.6:8080/surveys/${this.apiCall}`,
+          url: `http://192.168.4.14:8080/surveys/${this.apiCall}`,
           data: survey,
         })
           .then((res) => {
