@@ -88,7 +88,7 @@ export default {
   mounted() {
     axios
       .get(
-        `http://192.168.4.14:8080/surveys/survey0.471107988201993071/charts`,
+        `${this.$store.state.serverUrl}/surveys/survey0.471107988201993071/charts`,
         {
           crossDomain: true,
         }

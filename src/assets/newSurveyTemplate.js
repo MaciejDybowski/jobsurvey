@@ -21,28 +21,10 @@ const questions = [
         ],
     },
     {
-        questionName: "Podaj swój wiek",
-        questionType: "input",
-        questionPosition: 1,
-        questionId: 2,
-        chartType: 'bar',
-        questionAnswers: []
-    },
-
-    {
-        questionName: "Podaj swój staż w branży IT",
-        questionType: "input",
-        questionPosition: 2,
-        questionId: 3,
-        chartType: 'bar',
-        questionAnswers: []
-    },
-
-    {
         questionName: "Na jakim jesteś poziomie?",
         questionType: "radio",
-        questionPosition: 3,
-        questionId: 4,
+        questionPosition: 1,
+        questionId: 2,
         chartType: 'doughnut',
         questionAnswers: [
             {
@@ -62,8 +44,8 @@ const questions = [
     {
         questionName: "Jakim typem programisty jestes?",
         questionType: "radio",
-        questionPosition: 4,
-        questionId: 5,
+        questionPosition: 2,
+        questionId: 3,
         chartType: 'horizontalbar',
         questionAnswers: [
             {
@@ -96,8 +78,8 @@ const questions = [
     {
         questionName: "Jaki jest główny język programowania?",
         questionType: "radio",
-        questionPosition: 5,
-        questionId: 6,
+        questionPosition: 3,
+        questionId: 4,
         chartType: 'horizontalbar',
         questionAnswers: [
             {

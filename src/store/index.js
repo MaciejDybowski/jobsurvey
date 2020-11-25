@@ -47,10 +47,9 @@ export default new Vuex.Store({
   },
   actions: {
     login({ commit }, payload) {
-      //axios.get(`https://api.github.com/users/${payload.name}`).then(
       axios({
         method: "post",
-        url: 'http://192.168.4.22:8080/login',
+        url: `${this.state.serverUrl}/login`,
         data: payload,
         headers: {
           'Access-Control-Allow-Origin': '*',

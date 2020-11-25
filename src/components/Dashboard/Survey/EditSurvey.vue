@@ -19,7 +19,7 @@
                 <template v-slot:item="{item}">
                     <drag :key="item.questionId" :data="item">
                         <EditQuestion v-if="item.newQuestion" :item="item" @deleteQuestion="deleteQuestion" />
-                        <ViewQuestion v-else :item="item" @editQuestion="editQuestion" />
+                        <ViewQuestion v-else :item="item" @editQuestion="editQuestion" @deleteQuestion="deleteQuestion" />
                     </drag>
                 </template>
             </drop-list>
@@ -95,7 +95,7 @@ export default {
                         surveyDescription: res.data.surveyDescription
                     }
                     this.surveyQuestions = res.data.questions;
-                    this.surveyQuestions.splice(0, 6);
+                    this.surveyQuestions.splice(0, 4);
                     this.loadingData = false;
                 })
                 .catch(() => {});

@@ -31,10 +31,7 @@ export default {
             this.$router.push("/");
         }
     },
-    mounted() {
-        console.log(this.$session.get("user"));
-        console.log(this.$cookie.get("token"));
-    },
+   
 }
 </script>
 
