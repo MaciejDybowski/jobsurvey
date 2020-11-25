@@ -11,24 +11,8 @@
 </template>
 
 <script>
-import questionsType from '../../../../assets/questionsType.js';
-import chartTypeList from '../../../../assets/chartTypes.js';
 export default {
     props: ["item"],
-    data() {
-        return {
-            questionType: null,
-            chartTypes: chartTypeList,
-        }
-    },
-    created() {
-        this.getQuestionType();
-    },
-    methods: {
-        getQuestionType() {
-            this.questionType = questionsType.find(x => x.type === this.item.questionType)
-        },
-    }
 }
 </script>
 

@@ -39,6 +39,9 @@
                         </v-col>
                     </v-list>
                 </v-row>
+                 <v-row>
+                    <v-select :disabled="editDialog.loading" :items="chartTypes" v-model="editDialog.data.chartType" item-text="name" item-value="value" label="Char Type"></v-select>
+                    </v-row>
             </v-container>
         </v-card-text>
         <v-card-actions>
@@ -56,12 +59,14 @@
 
 <script>
 import questionsType from '../../../assets/questionsType.js';
+import chartTypeList from '../../../assets/chartTypes.js';
 export default {
     props: ['editDialog'],
     data() {
         return {
             newAnswer: "",
             questionType: null,
+            chartTypes: chartTypeList,
             snackBar: this.$store.getters.snackBar
         }
     },
@@ -73,7 +78,7 @@ export default {
             this.questionType = questionsType.find(x => x.type === this.editDialog.data.questionType)
         },
         addAnswer() {
-            var addNewAnswer = {
+            const addNewAnswer = {
                 answerName: this.newAnswer,
                 answerId: null
             }
