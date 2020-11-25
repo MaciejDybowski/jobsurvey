@@ -62,6 +62,9 @@ export default {
             await axios
                 .get(`${this.$store.state.serverUrl}/questions`, {
                     crossDomain: true,
+                    headers: {
+                        Authorization: this.$cookie.get('token')
+                    }
                 })
                 .then((res) => {
                     this.questionsList = res.data;

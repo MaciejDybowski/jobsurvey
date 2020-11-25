@@ -106,8 +106,11 @@ export default {
                 sendData.questions = questionsList;
                 await axios({
                         method: "post",
-                        url: `http://192.168.4.6:8080/surveys`,
+                        url: `${this.$store.state.serverUrl}/surveys`,
                         data: sendData,
+                        headers: {
+                            Authorization: this.$cookie.get('token')
+                        }
                     })
                     .then(() => {
                         this.loadingSend = false;

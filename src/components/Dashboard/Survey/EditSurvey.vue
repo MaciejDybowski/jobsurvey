@@ -84,6 +84,9 @@ export default {
             await axios
                 .get(`${this.$store.state.serverUrl}/surveys/${this.$route.params.id}/questions`, {
                     crossDomain: true,
+                    headers: {
+                        Authorization: this.$cookie.get('token')
+                    }
                 })
                 .then((res) => {
                     this.surveyInfo = {
@@ -130,8 +133,11 @@ export default {
             sendData.questions = newQuestions;
             await axios({
                         method: "post",
-                        url: `http://192.168.4.6:8080/surveys`,
+                        url: `${this.$store.state.serverUrl}/surveys`,
                         data: sendData,
+                        headers: {
+                            Authorization: this.$cookie.get('token')
+                        }
             }).then(async (response) => {
 
                 for(let i = 0; i < response.data.length; i++){
@@ -163,8 +169,11 @@ export default {
         async setPosition(questionsPosition){
             await axios({
                         method: "put",
-                        url: `http://192.168.4.6:8080/surveys/${this.$route.params.id}/questions/orders`,
+                        url: `${this.$store.state.serverUrl}/surveys/${this.$route.params.id}/questions/orders`,
                         data: questionsPosition,
+                        headers: {
+                            Authorization: this.$cookie.get('token')
+                        }
                 })
                 .then(() => {
                     this.loadingEdit = false;
@@ -172,7 +181,7 @@ export default {
                     this.snackBar.infoText = "Survey edit";
                     this.snackBar.color = "success";
                     this.$store.dispatch("showSnackBar", this.snackBar);
-                    //this.$router.push('/dashboard');
+                    this.$router.push('/dashboard');
                 })
                 .catch(() => {
                     this.loadingEdit = false;
