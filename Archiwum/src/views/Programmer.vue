@@ -72,7 +72,7 @@ import MultiBarBox from "../components/ChartBox/MultiBarBox";
 import HorizontalBatBox from "../components/ChartBox/HorizontalBarBox";
 
 export default {
-  name: "Programmer",
+  name: "Informatyka",
   components: {
     DoughnutBox,
     BarBox,

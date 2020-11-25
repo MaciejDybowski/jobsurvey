@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-import Programmer from '../views/Programmer.vue'
+import Informatyka from '../views/Informatyka.vue'
 import SingleSurvey from '../views/SingleSurvey.vue'
 
 Vue.use(VueRouter)
@@ -19,9 +19,9 @@ const routes = [
     component: Login
   },
   {
-    path: '/programmer',
-    name: 'Programmer',
-    component: Programmer
+    path: '/Informatyka',
+    name: 'Informatyka',
+    component: Informatyka
   },
   {
     path: '/singlesurvey/:hash',

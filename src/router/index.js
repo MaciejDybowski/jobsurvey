@@ -2,7 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-import Programmer from '../views/Programmer.vue'
+import Informatyka from '../views/Informatyka.vue'
+import Kryptologia from '../views/Kryptologia.vue'
+import Soon from '../views/Soon.vue'
 import SingleSurvey from '../views/SingleSurvey.vue'
 import SurveySubmit from '../views/SurveySubmit.vue'
 import ThanksForAnswers from '../views/ThanksForAnswers.vue'
@@ -21,9 +23,19 @@ const routes = [
     component: Login
   },
   {
-    path: '/programmer',
-    name: 'Programmer',
-    component: Programmer
+    path: '/informatyka',
+    name: 'Informatyka',
+    component: Informatyka
+  },
+  {
+    path: '/kryptologia',
+    name: 'Kryptologia',
+    component: Kryptologia
+  },
+  {
+    path: '/comingSoon',
+    name: 'comingSoon',
+    component: Soon
   },
   {
     path: '/singlesurvey/:hash',
@@ -44,9 +56,9 @@ const routes = [
     props: true,
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/About.vue')
+    path: '/pageNotFound',
+    name: 'PageNotFound',
+    component: () => import('../views/PageNotFound.vue')
   },
   {
     path: '/dashboard',

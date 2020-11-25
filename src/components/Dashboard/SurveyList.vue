@@ -86,7 +86,11 @@ export default {
       await axios
         .get(this.$store.state.serverUrl + "/surveys", {
           crossDomain: true,
+          headers: {
+            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNjA2MzM2MTU3fQ.JQ2CKrYVA88Ew36lpf6GknQm2qiIbQedsb9kDLFzqJU`,
+          },
         })
+
         .then((res) => {
           this.dataLoading = false;
           this.surveyList = res.data;

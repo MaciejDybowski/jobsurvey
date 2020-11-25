@@ -98,23 +98,32 @@ export default {
   },
   beforeMount() {
     // jezeli nie ma sesji dla zwykłego usera to znaczy ze to jego pierwsza ankieta w ktorej bierze udzial
+    //this.$session.destroy();
     if (!this.$session.exists()) {
       this.$session.start();
+      console.log("startuje sesje");
+      const tab = [];
+      this.$session.set("surveySecure", tab);
+    } else {
+      console.log("Sesja juz jest");
+      console.log(this.$session.get("surveySecure"));
     }
 
     // pobieram tablice hashow na ktore odpowiedzi user odpowiedzial
     const securityTable = this.$session.get("surveySecure");
     // sprawdzenie tablicy a aktualnym hashem -> jesli znajduje sie na liscie i wyslal juz odpowiedzi to przekierowanie na podziekowania
-    securityTable.forEach((survey) => {
-      if (survey.hash === this.$route.params.hash && survey.isAnswerSend) {
-        //this.$router.push("/thanks");
-      }
-    });
+    if (securityTable !== undefined) {
+      securityTable.forEach((survey) => {
+        if (survey.hash === this.$route.params.hash && survey.isAnswerSend) {
+          this.$router.push("/thanks");
+        }
+      });
+    }
   },
   mounted() {
     const hash = this.$route.params.hash;
     axios
-      .get(`http://192.168.4.14:8080/surveys/${hash}/questions`, {
+      .get(`http://192.168.4.22:8080/surveys/${hash}/questions`, {
         crossDomain: true,
       })
 
@@ -180,7 +189,7 @@ export default {
         // wysłanie requesta do bazy danych
         axios({
           method: "post",
-          url: `http://192.168.4.14:8080/surveys/${this.apiCall}`,
+          url: `http://192.168.4.22:8080/surveys/${this.apiCall}`,
           data: survey,
         })
           .then((res) => {
@@ -195,11 +204,11 @@ export default {
             tempArray.push(securityObj);
             this.$session.set("surveySecure", tempArray);
             this.$router.push("/surveySubmit");
-            console.log(res);
+
             return res;
           })
           .catch((err) => {
-            console.log("test2");
+            console.log("Error przy wysłaniu ankiety");
             console.log(err);
           });
       }

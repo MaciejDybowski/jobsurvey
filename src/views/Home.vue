@@ -9,7 +9,7 @@
         </li>
         <li>
           <div>
-            <router-link to="/about">O aplikacji</router-link>
+            <router-link to="/pageNotFound">O aplikacji</router-link>
           </div>
         </li>
         <li>
@@ -34,7 +34,7 @@
     </div>
     <footer class="myFooter">
       <p>
-        © 2020 Dybek & Wicher & Marcinek. Wszystkie prawa zastrzeżone. Made with
+        © 2020 Dybek & Wicher & Sirant. Wszystkie prawa zastrzeżone. Made with
         ❤️ and ☕
       </p>
     </footer>
@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       helloText:
-        "Dzięki naszej aplikacji zaoszczędzisz czas na tworzenie bezsensownych formularzy w Google Forms. Na co Ci excel w z wynikami jak u nas dostaniesz gotową analizę Twoich wyników?! Zaskocz szefa jak szybko potrafisz zrealizować zadanie w 100%!",
+        "Potrzebujesz ankiet? Jesteśmy jak google forms, tylko lepsi. Z Survey zapomnisz o excelu - analizę wyników zrobimy za Ciebie! Z nami wykonasz swoją pracę tak szybko, że zostanie ci czas na pykanie w CS!",
     };
   },
 };
@@ -73,7 +73,7 @@ export default {
       list-style: none;
 
       li {
-        width: 20%;
+        width: 25%;
         text-align: center;
         font-size: 20px;
         &:last-child {
@@ -152,6 +152,95 @@ export default {
     padding: 10px 10px;
     width: 100%;
     text-align: center;
+  }
+}
+
+@media (min-width: 276px) {
+  .home {
+    //background-color: yellow;
+    nav {
+      ul {
+        li {
+          width: 100%;
+          .decoration {
+            width: 60%;
+          }
+        }
+      }
+    }
+    .content {
+      flex-direction: column;
+
+      .text {
+        width: 100%;
+        padding: 40px 40px;
+      }
+      .svg {
+        width: 100%;
+        padding: 0px 40px;
+        img {
+          width: 95%;
+          height: 95%;
+        }
+      }
+    }
+  }
+}
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {
+  .home {
+    //background-color: green;
+    nav {
+      ul {
+        li {
+          width: 100%;
+          .decoration {
+            width: 50%;
+          }
+        }
+      }
+    }
+    .content {
+      flex-direction: row;
+
+      .text {
+        width: 100%;
+        padding: 40px 40px;
+      }
+      .svg {
+        width: 100%;
+        padding: 0px 40px;
+        img {
+          width: 95%;
+          height: 95%;
+        }
+      }
+    }
+  }
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+  .home {
+    //background-color: burlywood;
+    nav {
+      ul {
+        li {
+          width: 35%;
+        }
+      }
+    }
+    .content {
+      flex-direction: row;
+    }
+  }
+}
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+  .home {
+    //background-color: red;
   }
 }
 </style>

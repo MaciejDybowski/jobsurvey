@@ -1,34 +1,26 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar app color="white" flat>
-      <v-container class="py-0 fill-height">
-        <v-btn v-for="link in links" :key="link" text>
-          {{ link }}
-        </v-btn>
-      </v-container>
-    </v-app-bar>
-
     <v-main class="grey lighten-3">
       <v-container>
         <v-row>
-          <v-col cols="12">
+          <v-col xl="6" lg="8" md="10" sm="12">
             <v-sheet rounded="lg">
               <div class="nav">
                 <div class="link-box">
-                  <router-link to="/">Raport ogólny</router-link>
-                </div>
-                <div class="link-box active">
-                  <router-link to="/">Programista</router-link>
+                  <router-link to="/comingSoon">Raport ogólny</router-link>
                 </div>
                 <div class="link-box">
-                  <router-link to="/">Administrator / DevOps</router-link>
+                  <router-link to="/Informatyka">Informatyka WAT</router-link>
+                </div>
+                <div class="link-box active">
+                  <router-link to="/Kryptologia">Kryptologia WAT</router-link>
                 </div>
               </div>
             </v-sheet>
           </v-col>
         </v-row>
         <v-row>
-          <v-col>
+          <v-col xl="6" lg="8" md="10" sm="12">
             <v-sheet min-height="70vh" rounded="lg">
               <!--  -->
               <div class="wrapper" v-for="(question, i) in questions" :key="i">
@@ -72,7 +64,7 @@ import HorizontalBatBox from "../components/ChartBox/HorizontalBarBox";
 import axios from "axios";
 
 export default {
-  name: "Programmer",
+  name: "Informatyka",
   components: {
     DoughnutBox,
     BarBox,
@@ -81,14 +73,14 @@ export default {
   },
   data() {
     return {
-      links: ["Badanie IT", "Strona bulldoga"],
+      links: ["Strona główna", "Zaloguj"],
       questions: null,
     };
   },
   mounted() {
     axios
       .get(
-        `http://192.168.4.14:8080/surveys/survey0.471107988201993071/charts`,
+        `http://192.168.4.22:8080/surveys/survey0.84687165173104881/charts`,
         {
           crossDomain: true,
         }
@@ -96,7 +88,7 @@ export default {
 
       .then((res) => {
         this.questions = res.data;
-        console.log(res.data);
+        //console.log(res.data);
       })
       .catch((err) => {
         console.log(err);

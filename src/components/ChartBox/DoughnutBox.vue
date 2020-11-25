@@ -32,7 +32,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.chartDataAnswers);
+    // console.log(this.chartDataAnswers);
     this.fillData();
 
     this.loader = true;

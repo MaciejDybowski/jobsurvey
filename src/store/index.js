@@ -20,7 +20,7 @@ export default new Vuex.Store({
       expireTime: '',
       name: '',
     },
-    serverUrl: 'http://192.168.4.14:8080',
+    serverUrl: 'http://192.168.4.22:8080',
     snackBar: {
       show: false,
       timeout: 2000,
@@ -50,7 +50,7 @@ export default new Vuex.Store({
       //axios.get(`https://api.github.com/users/${payload.name}`).then(
       axios({
         method: "post",
-        url: 'http://192.168.4.14:8080/login',
+        url: 'http://192.168.4.22:8080/login',
         data: payload,
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -58,13 +58,15 @@ export default new Vuex.Store({
       })
         .then(
           (response) => {
-            console.log(response.data)
-            const res = response.data
+            console.log(response)
+            const res = `Token : ${response.data}`
+
             const userData = {
               name: res.name,
               token: JSON.stringify(res.id),
               expireTime: '3600s',
             }
+
             commit('authUser', userData);
             this._vm.$session.start()
             this._vm.$session.set('user', userData)
