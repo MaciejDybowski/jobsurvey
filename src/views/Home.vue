@@ -35,7 +35,7 @@
     <footer class="myFooter">
       <p>
         © 2020 Dybek & Wicher & Sirant. Wszystkie prawa zastrzeżone. Made with
-        ❤️ and ☕
+        ☕
       </p>
     </footer>
   </div>

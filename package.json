@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "axios": "^0.21.0",
+    "bootstrap": "^3.4.1",
     "chart.js": "^2.9.4",
     "core-js": "^3.6.5",
     "js-sha256": "^0.9.0",
     "node-sass": "^4.14.1",
     "sass-loader": "^10.0.5",
+    "sockjs-client": "^1.5.0",
     "vee-validate": "^3.4.3",
     "vue": "^2.6.11",
     "vue-chartjs": "^3.5.1",
@@ -24,7 +26,8 @@
     "vue-session": "^1.0.0",
     "vuelidate": "^0.7.6",
     "vuetify": "^2.2.11",
-    "vuex": "^3.4.0"
+    "vuex": "^3.4.0",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

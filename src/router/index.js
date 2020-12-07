@@ -8,6 +8,7 @@ import Soon from '../views/Soon.vue'
 import SingleSurvey from '../views/SingleSurvey.vue'
 import SurveySubmit from '../views/SurveySubmit.vue'
 import ThanksForAnswers from '../views/ThanksForAnswers.vue'
+import Socket from '../views/Socket.vue'
 
 Vue.use(VueRouter)
 
@@ -16,6 +17,11 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/socket',
+    name: 'socket',
+    component: Socket
   },
   {
     path: '/login',
