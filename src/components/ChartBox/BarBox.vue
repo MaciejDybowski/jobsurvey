@@ -6,7 +6,7 @@
       </p>
     </div>
     <div class="chart">
-      <Bar :chartdata="chartData" :options="chartOptions" />
+      <Bar :chartData="chartData" :options="chartOptions" />
     </div>
   </div>
 </template>
@@ -30,6 +30,11 @@ export default {
       chartOptions: null,
       loader: false,
     };
+  },
+  watch: {
+    chartResultData() {
+      this.fillData();
+    },
   },
   mounted() {
     this.fillData();

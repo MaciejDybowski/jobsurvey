@@ -230,6 +230,7 @@ export default {
 
 .survey-wrapper {
   width: 100%;
+  height: 100%;
 
   .title {
     text-align: center;
@@ -238,7 +239,7 @@ export default {
 
   .description {
     padding: 10px 30px;
-    text-align: justify;
+    text-align: center;
   }
 
   .survey-form {

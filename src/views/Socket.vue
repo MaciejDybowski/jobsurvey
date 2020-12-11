@@ -2,83 +2,24 @@
 <template>
   <v-app id="inspire">
     <v-main class="grey lighten-3">
-      <v-container>
-        <v-row>
-          <v-col xl="6" lg="8" md="10" sm="12">
-            <v-sheet rounded="lg">
-              <div class="nav">
-                <p>Websocket</p>
-              </div>
-              <div class="connections">
-                <div class="btn-con">
-                  <v-btn
-                    primary
-                    color="primary"
-                    :disabled="connected == true"
-                    @click.prevent="connect"
-                    >Connect</v-btn
-                  >
-                </div>
-
-                <div class="btn-con">
-                  <v-btn
-                    primary
-                    color="error"
-                    :disabled="connected == false"
-                    @click.prevent="disconnect"
-                    class="btn-con"
-                    >Disconnect</v-btn
-                  >
-                </div>
-              </div>
-              <div class="input-text">
-                <label for="name">What is your name?</label>
-                <input
-                  type="text"
-                  v-model="send_message"
-                  placeholder="Your name here..."
-                />
-                <div class="btn-con">
-                  <v-btn
-                    primary
-                    color="primary"
-                    type="submit"
-                    @click.prevent="send"
-                    >Send</v-btn
-                  >
-                </div>
-              </div>
-              <div class="informations">
-                <table id="conversation" class="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>Greetings</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="item in received_messages" :key="item">
-                      <td>{{ item }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="question"></div>
-            </v-sheet>
-          </v-col>
-        </v-row>
+      <v-container v-if="flagAll === true">
         <v-row>
           <v-col xl="6" lg="8" md="10" sm="12">
             <v-sheet min-height="20vh" rounded="lg">
               <div class="survey-wrapper">
                 <p class="title">Ankieta dla {{ surveyName }}</p>
                 <p class="description">{{ surveyDescription }}</p>
+                <Countdown
+                  class="title"
+                  deadline="December 09, 2020"
+                ></Countdown>
               </div>
             </v-sheet>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="flagSurvey === true">
           <v-col xl="6" lg="8" md="10" sm="12">
-            <v-sheet min-height="70vh" rounded="lg">
+            <v-sheet rounded="lg">
               <div class="survey-wrapper">
                 <form class="survey-form" @submit.prevent="sendSurvey">
                   <div class="questions" v-for="(q, i) in questions" :key="i">
@@ -128,11 +69,15 @@
             </v-sheet>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="flag === true">
           <v-col xl="6" lg="8" md="10" sm="12">
-            <v-sheet min-height="70vh" rounded="lg">
+            <v-sheet rounded="lg">
               <!--  -->
-              <div class="wrapper" v-for="(question, i) in questions2" :key="i">
+              <div
+                class="wrapper"
+                v-for="(question, i) in questionsAdd"
+                :key="i"
+              >
                 <div v-if="question.chartType === 'doughnut'">
                   <DoughnutBox
                     :chartDataAnswers="question.answers"
@@ -161,6 +106,10 @@
           </v-col>
         </v-row>
       </v-container>
+      <div v-else>
+        <p class="spinner-text">Loading...</p>
+        <Origami></Origami>
+      </div>
     </v-main>
   </v-app>
 </template>
@@ -175,6 +124,8 @@ import DoughnutBox from "../components/ChartBox/DoughnutBox.vue";
 import BarBox from "../components/ChartBox/BarBox.vue";
 //import MultiBarBox from "../components/ChartBox/MultiBarBox";
 import HorizontalBatBox from "../components/ChartBox/HorizontalBarBox";
+import Countdown from "vuejs-countdown";
+import Origami from "vue-loading-spinner/src/components/Origami";
 
 export default {
   name: "websocketdemo",
@@ -184,6 +135,8 @@ export default {
     Input,
     DoughnutBox,
     BarBox,
+    Countdown,
+    Origami,
     //MultiBarBox,
     HorizontalBatBox,
   },
@@ -193,24 +146,48 @@ export default {
       send_message: null,
       connected: false,
 
-      apiCall: "SsAese%20tU",
+      apiCall: "SsAese tU ",
       surveyName: "", // tytul ankiety z bazy
       surveyDescription: "", //data.surveyDescription, // opis ankiety z bazy danych
       questions: [], //data.questions, // lista pytan pobranych podczas zamontowania komponentu
       answers: [], // pusta tablica przygotowana pod emitowanie odpowiedzi z dzieci i finalnie wyslanie do API
       flag: false,
+      flagSurvey: true,
+      flagAll: false,
 
-      questions2: null,
+      questions2: [],
     };
   },
-  methods: {
-    send() {
-      //console.log("Send message:" + this.send_message);
-      if (this.stompClient && this.stompClient.connected) {
-        const msg = { name: this.send_message };
-        this.stompClient.send("/survey/submit", JSON.stringify(msg), {});
-      }
+beforeMount() {
+    // jezeli nie ma sesji dla zwykłego usera to znaczy ze to jego pierwsza ankieta w ktorej bierze udzial
+    //this.$session.destroy();
+    if (!this.$session.exists()) {
+      this.$session.start();
+      //console.log("startuje sesje");
+      const tab = [];
+      this.$session.set("surveySecure", tab);
+    } else {
+      //console.log("Sesja juz jest");
+      //console.log(this.$session.get("surveySecure"));
+    }
+
+    // pobieram tablice hashow na ktore odpowiedzi user odpowiedzial
+    const securityTable = this.$session.get("surveySecure");
+    // sprawdzenie tablicy a aktualnym hashem -> jesli znajduje sie na liscie i wyslal juz odpowiedzi to przekierowanie na podziekowania
+    if (securityTable !== undefined) {
+      securityTable.forEach((survey) => {
+        if (survey.hash === "SsAese%20tU" && survey.isAnswerSend) {
+          this.$router.push("/results");
+        }
+      });
+    }
+  },
+  computed: {
+    questionsAdd: function () {
+      return this.questions2;
     },
+  },
+  methods: {
     connect() {
       this.socket = new SockJS("https://surveyrest.herokuapp.com/test");
       this.stompClient = Stomp.over(this.socket);
@@ -218,11 +195,9 @@ export default {
         {},
         () => {
           this.connected = true;
-          //console.log(frame);
-          this.stompClient.subscribe("/prefix/messages", (tick) => {
-            console.log("to jest tick");
-            console.log(tick);
-            this.received_messages.push(JSON.parse(tick.body).content);
+          this.stompClient.subscribe("/prefix/messages/SsAese tU ", (tick) => {
+            const obj = JSON.parse(tick.body);
+            this.questions2 = obj;
           });
         },
         (error) => {
@@ -240,26 +215,19 @@ export default {
     tickleConnection() {
       this.connected ? this.disconnect() : this.connect();
     },
-    // metoda przypisana do kazdego dziecka, wiemy ze dziecko wyemituje nam id i odpowiedz
+    // metoda zapisująca wyniki usera
     saveData(id, answer) {
-      //console.log(`Rodzic : ${id} - ${answer}`);
-      // laczenie w obiekt
       const obj = {
         questionId: id,
         answer: answer,
       };
-      // walidacja zmiany odpowiedzi przez uzytkownika
-      // sprawdzamy index - jezlie istnieje juz w tablicy odpowiedzi obiekt z id wyemitowanym z dziecka to oznacza ze
-      // uzytkownik zmienil odpowiedz i sprawdzany na jakim indeksie tablicy odpowiedzi jest nasza odpowiedz
       let index = this.answers.findIndex(
         (e) => e.questionId === obj.questionId
       );
-      // jesli index zwroci -1 to oznacza ze nie ma takiego id w tablicy odp -> czyli nie udzialal nikt odpowiedzi na to pytania
+
       if (index === -1) {
-        // wiec jak nie ma jeszcze odp na to pytanie to dodajemy obiekt wczesniej przygotowany do tablicy odpowiedzi
         this.answers.push(obj);
       } else {
-        // jesli mamy juz obiekt w odpowiedziach o danym id to podmieniamy starą odp na nową
         let currentAnswer = {
           questionId: id,
           answer: answer,
@@ -269,61 +237,70 @@ export default {
     },
     // metoda do wyslania ankiety do bazy
     sendSurvey() {
-      // mala walidacja odpowiedzi na wszystkie pytania
-      // mianowicie sprawdzamy czy dlugosc tablicy pytan = dlugosci tablicy odp jeśli tak to mamy pewnosc ze wszedzie
-      // uzytopwnik udzielil odpowiedzi
       if (this.questions.length !== this.answers.length) {
-        /*  console.log(this.answers.length);
-        console.log(this.questions.length); */
         alert("Nie podałeś odpowiedzi na wszystkie pytania");
       } else {
-        // tworzenie obiektu pod wysłanie do bazy danych
         const survey = {
           surveyId: this.apiCall,
           answers: this.answers,
         };
 
         if (this.stompClient && this.stompClient.connected) {
-          this.stompClient.send("/survey/submit", survey, {});
+          this.stompClient.send("/survey/test", JSON.stringify(survey), {});
         }
+        const securityObj = {
+              hash: "SsAese%20tU",
+              isAnswerSend: true,
+            };
+            // tablica zabezpieczen dla wielokrotnego odpalenia tej samej ankiety
+            const tempArray = this.$session.get("surveySecure");
+            // pobieramy co aktualnie tam jest,
+            if (tempArray !== undefined) {
+              tempArray.push(securityObj);
+              this.$session.set("surveySecure", tempArray);
+            } else {
+              let a = [];
+              this.$session.set("surveySecure", a);
+            }
+
+        setTimeout(() => {
+          this.flag = true;
+          this.flagSurvey = false;
+        }, 1000);
       }
     },
   },
   mounted() {
+    this.connect();
+    const hash = "SsAese%20tU";
     axios
-      .get(`${this.$store.state.serverUrl}/surveys/SsAese%20tU/charts`, {
+      .get(`${this.$store.state.serverUrl}/surveys/${hash}/charts`, {
         crossDomain: true,
       })
-
       .then((res) => {
         this.questions2 = res.data;
-        //console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
 
-    //this.flag = true;
-    // this.connect();
-    const hash = "SsAese%20tU";
     axios
       .get(`${this.$store.state.serverUrl}/surveys/${hash}/questions`, {
         crossDomain: true,
       })
-
       .then((res) => {
         this.surveyName = res.data.surveyName;
         this.surveyDescription = res.data.surveyDescription;
         this.questions = res.data.questions;
-        //console.log(res.data);
-        //data.surveyName = res.data;
         return res;
       })
       .catch((err) => {
         console.log(err);
       });
 
-    this.flag = true;
+    setTimeout(() => {
+      this.flagAll = true;
+    }, 3000);
   },
 };
 </script>
@@ -348,5 +325,12 @@ export default {
 .informations {
   display: flex;
   padding: 20px 20px;
+}
+.spinner {
+  margin: auto;
+}
+
+.spinner-text {
+  text-align: center;
 }
 </style>
