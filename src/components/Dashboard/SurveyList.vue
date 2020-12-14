@@ -2,10 +2,13 @@
   <div>
     <v-data-table
       :headers="headers"
+      hide-default-footer
+      :page.sync="page"
       :loading="dataLoading"
       loading-text="Loading... Please wait"
       :items="surveyList"
       sort-by="dataCreated"
+      :items-per-page="itemsPerPage"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -29,6 +32,10 @@
       </template>
       <template v-slot:no-data> No data </template>
     </v-data-table>
+    <v-pagination
+        v-model="page"
+        :length="pageCount"
+      ></v-pagination>
     <DeleteDialog
       :dialogDelete="dialogDelete"
       @deleteItemConfirm="deleteItemConfirm"
@@ -49,6 +56,9 @@ export default {
   },
   data() {
     return {
+      page: 1,
+      pageCount: null,
+      itemsPerPage: 2,
       snackBar: this.$store.getters.snackBar,
       dataLoading: false,
       dialogDelete: {
@@ -77,23 +87,30 @@ export default {
       surveyList: [],
     };
   },
-  created() {
-    this.fetchSurveyList();
+  watch: {
+    page: function(val) {
+      console.log('test' + val);
+      this.fetchSurveyList(val-1);
+    }
+  },
+  mounted() {
+    this.fetchSurveyList(this.page-1);
   },
   methods: {
-    async fetchSurveyList() {
+    async fetchSurveyList(page) {
       this.dataLoading = true;
+      
       await axios
-        .get(this.$store.state.serverUrl + "/surveys", {
+        .get(`${this.$store.state.serverUrl}/surveys?numberPerPage=${this.itemsPerPage}&page=${page}`, {
           crossDomain: true,
           headers: {
             Authorization: this.$cookie.get('token')
           }
         })
-
         .then((res) => {
           this.dataLoading = false;
-          this.surveyList = res.data;
+          this.surveyList = res.data.content;
+          this.pageCount = res.data.totalPages;
         })
         .catch(() => {
           this.dataLoading = false;

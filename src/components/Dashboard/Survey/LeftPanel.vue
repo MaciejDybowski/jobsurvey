@@ -2,17 +2,26 @@
 <div class="fixed">
     <v-card>
         <v-card-title>
-            <v-text-field v-model="search" :loading="dataLoading" append-icon="mdi-magnify" label="Search question" single-line hide-details></v-text-field>
+            Pytania znajdujące się w bazie danych
         </v-card-title>
-        <v-data-table hide-default-header hide-default-footer :headers="headers" :items="questionsList" :items-per-page="5" :search="search">
+            <v-data-table
+            hide-default-footer
+            :page.sync="page"
+            :loading="dataLoading"
+            loading-text="Loading... Please wait"
+            :items="questionsList"
+            :items-per-page="itemsPerPage"
+            >
             <template v-slot:item="row">
                 <tr @click="addQuestion(row.item)">
                     <td>{{row.item.questionName}}</td>
-
                 </tr>
             </template>
         </v-data-table>
-
+        <v-pagination
+        v-model="page"
+        :length="pageCount"
+        ></v-pagination>
     </v-card>
 
     <v-card class="margin">
@@ -38,8 +47,10 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            page: 1,
+            pageCount: null,
+            itemsPerPage: 5,
             newQuestionKey: 1000,
-            search: '',
             headers: [{
                 text: 'Question',
                 align: 'start',
@@ -52,23 +63,30 @@ export default {
             snackBar: this.$store.getters.snackBar,
         }
     },
+     watch: {
+    page: function(val) {
+      console.log('test ' + val);
+      this.fetchQuestion(val-1);
+    }
+     },
+
     created() {
         this.questionTypeList = questionsType;
-        this.fetchQuestion();
+        this.fetchQuestion(this.page-1);
     },
     methods: {
-        async fetchQuestion() {
+        async fetchQuestion(page) {
             this.dataLoading = true;
             await axios
-                .get(`${this.$store.state.serverUrl}/questions`, {
+                .get(`${this.$store.state.serverUrl}/questions?numberPerPage=${this.itemsPerPage}&page=${page}`, {
                     crossDomain: true,
                     headers: {
                         Authorization: this.$cookie.get('token')
                     }
                 })
                 .then((res) => {
-                    this.questionsList = res.data;
-                    this.questionsList.splice(0, 4);
+                    this.questionsList = res.data.content;
+                    this.pageCount = res.data.totalPages;
                     this.dataLoading = false;
                 })
                 .catch(() => {

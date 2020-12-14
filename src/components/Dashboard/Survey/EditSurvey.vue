@@ -92,7 +92,9 @@ export default {
                     this.surveyInfo = {
                         surveyId: res.data.surveyId,
                         surveyName: res.data.surveyName,
-                        surveyDescription: res.data.surveyDescription
+                        surveyDescription: res.data.surveyDescription,
+                        surveyStart: res.data.surveyStart,
+                        surveyStop: res.data.surveyStop,
                     }
                     this.surveyQuestions = res.data.questions;
                     this.surveyQuestions.splice(0, 4);
@@ -130,6 +132,8 @@ export default {
             sendData.surveyId = this.$route.params.id;
             sendData.surveyDescription = this.surveyInfo.surveyDescription;
             sendData.surveyName = this.surveyInfo.surveyName;
+            sendData.surveyStart = this.surveyInfo.surveyStart;
+            sendData.surveyStop = this.surveyInfo.surveyStop;
             sendData.questions = newQuestions;
             await axios({
                         method: "post",

@@ -56,6 +56,8 @@ export default {
                 surveyId: null,
                 surveyName: null,
                 surveyDescription: null,
+                surveyStart: null,
+                surveyStop: null
             },
             surveyDefaultQuestion: defaultQuestions,
             surveyQuestions: [],
@@ -90,9 +92,11 @@ export default {
             } else {
                 this.loadingSend = true
                 var sendData = {};
-                sendData.surveyId = 'survey' + Math.random(Math.random() * 1000) + 1;
+                sendData.surveyId = null;
                 sendData.surveyName = this.surveyInfo.surveyName;
                 sendData.surveyDescription = this.surveyInfo.surveyDescription;
+                sendData.surveyStart = this.surveyInfo.surveyStart;
+                sendData.surveyStop = this.surveyInfo.surveyStop;
                 var questionsList = this.surveyDefaultQuestion;
                 var lastQuestions = questionsList.length;
                 for (var i = 0; i < this.surveyQuestions.length; i++) {

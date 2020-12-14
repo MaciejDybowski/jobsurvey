@@ -20,7 +20,7 @@ export default new Vuex.Store({
       expireTime: '',
       name: '',
     },
-    serverUrl: 'http://192.168.4.22:8080',
+    serverUrl: 'https://surveyrest.herokuapp.com',
     snackBar: {
       show: false,
       timeout: 2000,
