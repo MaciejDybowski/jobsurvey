@@ -79,12 +79,9 @@ export default {
   },
   mounted() {
     axios
-      .get(
-        `http://192.168.4.22:8080/surveys/survey0.84687165173104881/charts`,
-        {
-          crossDomain: true,
-        }
-      )
+      .get(`${this.$store.state.serverUrl}/surveys/lkieoAaAAo/charts`, {
+        crossDomain: true,
+      })
 
       .then((res) => {
         this.questions = res.data;

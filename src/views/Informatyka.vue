@@ -79,12 +79,9 @@ export default {
   },
   mounted() {
     axios
-      .get(
-        `${this.$store.state.serverUrl}/surveys/survey0.471107988201993071/charts`,
-        {
-          crossDomain: true,
-        }
-      )
+      .get(`${this.$store.state.serverUrl}/surveys/otliktfklt/charts`, {
+        crossDomain: true,
+      })
 
       .then((res) => {
         this.questions = res.data;

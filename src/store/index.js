@@ -30,12 +30,11 @@ export default new Vuex.Store({
   },
   mutations: {
     authUser(state, payload) {
-      state.user.isAuth = true;
-      state.user.name = payload.name,
+      state.user.isAuth = true,
+        state.user.name = payload.name,
         state.user.token = payload.token,
-        state.user.expireTime = payload.expireTime,
+        state.user.expireTime = payload.expireTime
 
-        console.log(`Loggin ${state.user.name} is success!`)
     },
 
     handleErr(state) {
@@ -57,7 +56,7 @@ export default new Vuex.Store({
       })
         .then(
           (response) => {
-            console.log('Login ' + response.data)
+            //console.log('Login ' + response.data)
             const res = response.data
             const userData = {
               name: res.name,
@@ -72,7 +71,7 @@ export default new Vuex.Store({
             this._vm.$cookie.set('token', userData.token, { expires: userData.expireTime })
             router.push('/dashboard')
           }, () => {
-            console.log('mamy error')
+            console.log('mamy error przy autentykacji')
             commit('handleErr')
           })
     },

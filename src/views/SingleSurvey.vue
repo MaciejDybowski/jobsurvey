@@ -101,12 +101,12 @@ export default {
     //this.$session.destroy();
     if (!this.$session.exists()) {
       this.$session.start();
-      console.log("startuje sesje");
+      //console.log("startuje sesje");
       const tab = [];
       this.$session.set("surveySecure", tab);
     } else {
-      console.log("Sesja juz jest");
-      console.log(this.$session.get("surveySecure"));
+      //console.log("Sesja juz jest");
+      //console.log(this.$session.get("surveySecure"));
     }
 
     // pobieram tablice hashow na ktore odpowiedzi user odpowiedzial
@@ -131,7 +131,7 @@ export default {
         this.surveyName = res.data.surveyName;
         this.surveyDescription = res.data.surveyDescription;
         this.questions = res.data.questions;
-        console.log(res.data);
+        //console.log(res.data);
         //data.surveyName = res.data;
         return res;
       })
@@ -144,7 +144,7 @@ export default {
   methods: {
     // metoda przypisana do kazdego dziecka, wiemy ze dziecko wyemituje nam id i odpowiedz
     saveData(id, answer) {
-      console.log(`Rodzic : ${id} - ${answer}`);
+      //console.log(`Rodzic : ${id} - ${answer}`);
       // laczenie w obiekt
       const obj = {
         questionId: id,
@@ -175,8 +175,8 @@ export default {
       // mianowicie sprawdzamy czy dlugosc tablicy pytan = dlugosci tablicy odp jeśli tak to mamy pewnosc ze wszedzie
       // uzytopwnik udzielil odpowiedzi
       if (this.questions.length !== this.answers.length) {
-        console.log(this.answers.length);
-        console.log(this.questions.length);
+        /*  console.log(this.answers.length);
+        console.log(this.questions.length); */
         alert("Nie podałeś odpowiedzi na wszystkie pytania");
       } else {
         // tworzenie obiektu pod wysłanie do bazy danych
@@ -185,7 +185,7 @@ export default {
           answers: this.answers,
         };
 
-        alert(`To twoja ankieta ${JSON.stringify(survey)}`);
+        //alert(`To twoja ankieta ${JSON.stringify(survey)}`);
         // wysłanie requesta do bazy danych
         axios({
           method: "post",
@@ -198,17 +198,22 @@ export default {
               isAnswerSend: true,
             };
             // tablica zabezpieczen dla wielokrotnego odpalenia tej samej ankiety
-            let tempArray = [];
+            const tempArray = this.$session.get("surveySecure");
             // pobieramy co aktualnie tam jest,
-            tempArray = this.$session.get("surveySecure");
-            tempArray.push(securityObj);
-            this.$session.set("surveySecure", tempArray);
+            if (tempArray !== undefined) {
+              tempArray.push(securityObj);
+              this.$session.set("surveySecure", tempArray);
+            } else {
+              let a = [];
+              this.$session.set("surveySecure", a);
+            }
+
             this.$router.push("/surveySubmit");
 
             return res;
           })
           .catch((err) => {
-            console.log("Error przy wysłaniu ankiety");
+            console.log("Error przy wysłaniu ankiety lub przekierowaniu");
             console.log(err);
           });
       }
@@ -225,6 +230,7 @@ export default {
 
 .survey-wrapper {
   width: 100%;
+  height: 100%;
 
   .title {
     text-align: center;
@@ -233,7 +239,7 @@ export default {
 
   .description {
     padding: 10px 30px;
-    text-align: justify;
+    text-align: center;
   }
 
   .survey-form {
