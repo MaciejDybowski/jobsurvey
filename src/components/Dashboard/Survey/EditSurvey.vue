@@ -6,13 +6,8 @@
         </v-col>
 
         <v-col>
-        
             <SurveyHeader :surveyInfo="surveyInfo" />
             <v-divider></v-divider>
-            <h1>Default questions</h1>
-            <v-list v-for="item in surveyDefaultQuestion" :key="item.questionId">
-                <DefaultQuestion :item="item" />
-            </v-list>
             <v-divider></v-divider>
             <h1>Modify your questions</h1>
             <drop-list :items="surveyQuestions" @reorder="$event.apply(surveyQuestions)">
@@ -40,9 +35,7 @@ import {
 import SurveyHeader from './Questions/SurveyHeader.vue';
 import ViewQuestion from './Questions/ViewQuestion.vue';
 import EditQuestion from './Questions/EditQuestion.vue';
-import DefaultQuestion from './Questions/DefaultQuestion.vue'
 import LeftPanel from './LeftPanel.vue';
-import defaultQuestions from '../../../assets/newSurveyTemplate.js';
 import axios from 'axios';
 export default {
     name: "EditSurvey",
@@ -53,12 +46,10 @@ export default {
         EditQuestion,
         LeftPanel,
         SurveyHeader,
-        DefaultQuestion
     },
     data() {
         return {
             surveyInfo: [],
-            surveyDefaultQuestion: defaultQuestions,
             surveyQuestions: [],
             loadingEdit: false,
             snackBar: this.$store.getters.snackBar,
@@ -97,7 +88,6 @@ export default {
                         surveyStop: res.data.surveyStop,
                     }
                     this.surveyQuestions = res.data.questions;
-                    this.surveyQuestions.splice(0, 4);
                     this.loadingData = false;
                 })
                 .catch(() => {});
